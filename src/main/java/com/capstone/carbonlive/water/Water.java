@@ -24,4 +24,5 @@ public class Water {
 
     @Column(nullable = false)
     private Integer usages;
+
 }

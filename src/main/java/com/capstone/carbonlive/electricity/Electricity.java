@@ -17,7 +17,7 @@ public class Electricity {
     private Long id;
 
     @Column(nullable = false)
-    private LocalDate recorded_at;
+    private LocalDate recordedAt;
 
     @Column(nullable = false)
     private int usages;
@@ -28,8 +28,8 @@ public class Electricity {
     private Building building;
 
     @Builder(toBuilder = true)
-    public Electricity(LocalDate recorded_at, int usages, Building building) {
-        this.recorded_at = recorded_at;
+    public Electricity(LocalDate recordedAt, int usages, Building building) {
+        this.recordedAt = recordedAt;
         this.usages = usages;
         this.building = building;
     }

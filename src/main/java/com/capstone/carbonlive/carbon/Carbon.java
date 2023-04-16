@@ -18,7 +18,7 @@ public class Carbon {
     private Long id;
 
     @Column(nullable = false)
-    private LocalDate recorded_at;
+    private LocalDate recordedAt;
 
     @Column(nullable = false, precision = 10, scale = 2)
     private BigDecimal usages;
@@ -29,8 +29,8 @@ public class Carbon {
     private Building building;
 
     @Builder(toBuilder = true)
-    public Carbon(LocalDate recorded_at, BigDecimal usages, Building building) {
-        this.recorded_at = recorded_at;
+    public Carbon(LocalDate recordedAt, BigDecimal usages, Building building) {
+        this.recordedAt = recordedAt;
         this.usages = usages;
         this.building = building;
     }

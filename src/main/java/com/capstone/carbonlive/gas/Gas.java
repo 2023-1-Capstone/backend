@@ -30,6 +30,7 @@ public class Gas {
 
     @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "BUILDING_ID", nullable = false)
+    @ToString.Exclude
     private Building building;
 
 }

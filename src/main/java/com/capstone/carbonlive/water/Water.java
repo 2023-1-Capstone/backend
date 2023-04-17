@@ -23,7 +23,7 @@ public class Water {
     private LocalDate recordedAt;
 
     @Column(nullable = false)
-    private Integer usages;
+    private int usages;
 
 
 }

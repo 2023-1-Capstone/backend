@@ -26,7 +26,7 @@ public class Gas {
     private LocalDate recordedAt;
 
     @Column(nullable = false)
-    private Integer usages;
+    private int usages;
 
     @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "BUILDING_ID", nullable = false)

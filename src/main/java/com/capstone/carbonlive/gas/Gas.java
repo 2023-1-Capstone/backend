@@ -31,4 +31,5 @@ public class Gas {
     @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "BUILDING_ID", nullable = false)
     private Building building;
+
 }

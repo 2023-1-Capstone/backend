@@ -1,19 +1,21 @@
-package com.capstone.carbonlive.electricity;
+package com.capstone.carbonlive.entity;
 
-import com.capstone.carbonlive.building.Building;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDate;
 
+import static jakarta.persistence.FetchType.LAZY;
+
 @Entity
 @Getter
 @ToString
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Electricity {
+public class Gas {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "ELECTRICITY_ID")
+    @Column(name = "GAS_ID")
     private Long id;
 
     @Column(nullable = false)
@@ -22,13 +24,14 @@ public class Electricity {
     @Column(nullable = false)
     private int usages;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "BUILDING_ID", nullable = false)
     @ToString.Exclude
     private Building building;
 
     @Builder(toBuilder = true)
-    public Electricity(LocalDate recordedAt, int usages, Building building) {
+    public Gas(Long id, LocalDate recordedAt, int usages, Building building) {
+        this.id = id;
         this.recordedAt = recordedAt;
         this.usages = usages;
         this.building = building;

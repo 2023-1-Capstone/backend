@@ -1,10 +1,10 @@
-package com.capstone.carbonlive.gas.service;
+package com.capstone.carbonlive.service;
 
-import com.capstone.carbonlive.building.Building;
-import com.capstone.carbonlive.building.repository.BuildingRepository;
+import com.capstone.carbonlive.entity.Building;
+import com.capstone.carbonlive.repository.BuildingRepository;
 import com.capstone.carbonlive.dto.UsageResponse;
-import com.capstone.carbonlive.gas.Gas;
-import com.capstone.carbonlive.gas.repository.GasRepository;
+import com.capstone.carbonlive.entity.Gas;
+import com.capstone.carbonlive.repository.GasRepository;
 import com.capstone.carbonlive.utils.LocalDateToYear;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

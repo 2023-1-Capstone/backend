@@ -1,26 +1,27 @@
-package com.capstone.carbonlive.electricity;
+package com.capstone.carbonlive.entity;
 
-import com.capstone.carbonlive.building.Building;
+import com.capstone.carbonlive.entity.Building;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 
 @Entity
 @Getter
-@ToString
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Electricity {
+@ToString
+public class Carbon {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "ELECTRICITY_ID")
+    @Column(name = "CARBON_ID")
     private Long id;
 
     @Column(nullable = false)
     private LocalDate recordedAt;
 
-    @Column(nullable = false)
-    private int usages;
+    @Column(nullable = false, precision = 10, scale = 2)
+    private BigDecimal usages;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "BUILDING_ID", nullable = false)
@@ -28,7 +29,7 @@ public class Electricity {
     private Building building;
 
     @Builder(toBuilder = true)
-    public Electricity(LocalDate recordedAt, int usages, Building building) {
+    public Carbon(LocalDate recordedAt, BigDecimal usages, Building building) {
         this.recordedAt = recordedAt;
         this.usages = usages;
         this.building = building;

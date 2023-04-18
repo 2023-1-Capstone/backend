@@ -1,7 +1,7 @@
-package com.capstone.carbonlive.gas.repository;
+package com.capstone.carbonlive.repository;
 
-import com.capstone.carbonlive.building.Building;
-import com.capstone.carbonlive.gas.Gas;
+import com.capstone.carbonlive.entity.Building;
+import com.capstone.carbonlive.entity.Gas;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;

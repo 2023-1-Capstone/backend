@@ -1,6 +1,6 @@
-package com.capstone.carbonlive.building.controller;
+package com.capstone.carbonlive.controller;
 
-import com.capstone.carbonlive.building.service.BuildingService;
+import com.capstone.carbonlive.service.BuildingService;
 import com.capstone.carbonlive.dto.BuildingResponse;
 import com.capstone.carbonlive.dto.BuildingResult;
 import lombok.RequiredArgsConstructor;

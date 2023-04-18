@@ -1,6 +1,6 @@
-package com.capstone.carbonlive.gas;
+package com.capstone.carbonlive.entity;
 
-import com.capstone.carbonlive.building.Building;
+import com.capstone.carbonlive.entity.Building;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;

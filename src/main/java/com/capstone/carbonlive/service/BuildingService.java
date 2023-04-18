@@ -1,7 +1,7 @@
-package com.capstone.carbonlive.building.service;
+package com.capstone.carbonlive.service;
 
-import com.capstone.carbonlive.building.Building;
-import com.capstone.carbonlive.building.repository.BuildingRepository;
+import com.capstone.carbonlive.entity.Building;
+import com.capstone.carbonlive.repository.BuildingRepository;
 import com.capstone.carbonlive.dto.BuildingResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

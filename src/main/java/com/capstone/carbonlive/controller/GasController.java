@@ -1,8 +1,8 @@
-package com.capstone.carbonlive.gas.controller;
+package com.capstone.carbonlive.controller;
 
 import com.capstone.carbonlive.dto.UsageResponse;
 import com.capstone.carbonlive.dto.UsageResult;
-import com.capstone.carbonlive.gas.service.GasService;
+import com.capstone.carbonlive.service.GasService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;

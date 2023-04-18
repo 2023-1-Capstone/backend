@@ -1,11 +1,7 @@
 package com.capstone.carbonlive.entity;
 
-import com.capstone.carbonlive.entity.Building;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 
 import java.time.LocalDate;
 
@@ -33,4 +29,11 @@ public class Gas {
     @ToString.Exclude
     private Building building;
 
+    @Builder(toBuilder = true)
+    public Gas(Long id, LocalDate recordedAt, int usages, Building building) {
+        this.id = id;
+        this.recordedAt = recordedAt;
+        this.usages = usages;
+        this.building = building;
+    }
 }

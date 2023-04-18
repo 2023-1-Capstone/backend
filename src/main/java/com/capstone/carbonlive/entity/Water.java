@@ -1,4 +1,4 @@
-package com.capstone.carbonlive.water;
+package com.capstone.carbonlive.entity;
 
 import jakarta.persistence.*;
 import lombok.AccessLevel;

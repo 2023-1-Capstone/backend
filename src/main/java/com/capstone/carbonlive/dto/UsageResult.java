@@ -1,7 +1,10 @@
 package com.capstone.carbonlive.dto;
 
+import lombok.Data;
+
 import java.util.List;
 
+@Data
 public class UsageResult {
     private List<UsageResponse> result;
 

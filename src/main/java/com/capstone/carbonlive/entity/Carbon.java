@@ -1,6 +1,5 @@
 package com.capstone.carbonlive.entity;
 
-import com.capstone.carbonlive.entity.Building;
 import jakarta.persistence.*;
 import lombok.*;
 

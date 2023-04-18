@@ -8,7 +8,6 @@ import org.springframework.restdocs.operation.preprocess.Preprocessors;
 
 @TestConfiguration
 public class RestDocsConfiguration {
-
     @Bean
     public RestDocumentationResultHandler write() {
         return MockMvcRestDocumentation.document(
@@ -17,3 +16,4 @@ public class RestDocsConfiguration {
                 Preprocessors.preprocessResponse(Preprocessors.prettyPrint())
         );
     }
+}

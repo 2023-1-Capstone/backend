@@ -17,4 +17,3 @@ public class RestDocsConfiguration {
                 Preprocessors.preprocessResponse(Preprocessors.prettyPrint())
         );
     }
-}

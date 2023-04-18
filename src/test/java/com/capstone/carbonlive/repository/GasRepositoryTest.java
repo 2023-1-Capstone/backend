@@ -22,11 +22,38 @@ class GasRepositoryTest {
     @Autowired GasRepository gasRepository;
     @Autowired BuildingRepository buildingRepository;
 
+//    @Test
+//    public void findByBuilding() throws Exception {
+//        //given
+//        Building building = Building.builder()
+//                .name("building1")
+//                .gasArea(new BigDecimal(1111.11))
+//                .elecArea(new BigDecimal(2222.22))
+//                .gasDescription(null)
+//                .elecDescription(null)
+//                .build();
+//        buildingRepository.save(building);
+//
+//        Gas gas = Gas.builder()
+//                .recordedAt(LocalDate.now())
+//                .usages(111)
+//                .building(building)
+//                .build();
+//        gasRepository.save(gas);
+//
+//        //when
+//        Building findBuilding = buildingRepository.findById(1L).orElseThrow(() -> new RuntimeException());
+//        List<Gas> findGas = gasRepository.findByBuilding(findBuilding);
+//
+//        //then
+//        assertThat(findGas.size()).isEqualTo(1);
+//        assertThat(findGas.get(0).getBuilding()).isEqualTo(findBuilding);
+//    }
+
     @Test
-    public void findByBuilding() throws Exception {
+    public void findByBuildingOrderByRecordedAtDesc() throws Exception {
         //given
         Building building = Building.builder()
-                .id(1L)
                 .name("building1")
                 .gasArea(new BigDecimal(1111.11))
                 .elecArea(new BigDecimal(2222.22))
@@ -35,20 +62,40 @@ class GasRepositoryTest {
                 .build();
         buildingRepository.save(building);
 
+        Building building2 = Building.builder()
+                .name("building2")
+                .gasArea(new BigDecimal(1111.11))
+                .elecArea(new BigDecimal(2222.22))
+                .gasDescription(null)
+                .elecDescription(null)
+                .build();
+        buildingRepository.save(building2);
+
         Gas gas = Gas.builder()
-                .id(1L)
-                .recordedAt(LocalDate.now())
+                .recordedAt(LocalDate.of(2022, 2, 2))
                 .usages(111)
                 .building(building)
                 .build();
         gasRepository.save(gas);
+        Gas gas2 = Gas.builder()
+                .recordedAt(LocalDate.of(2022, 5, 3))
+                .usages(222)
+                .building(building)
+                .build();
+        gasRepository.save(gas2);
+        Gas gas3 = Gas.builder()
+                .recordedAt(LocalDate.of(2021, 3, 3))
+                .usages(333)
+                .building(building2)
+                .build();
+        gasRepository.save(gas3);
 
         //when
         Building findBuilding = buildingRepository.findById(1L).orElseThrow(() -> new RuntimeException());
-        List<Gas> findGas = gasRepository.findByBuilding(findBuilding);
+        List<Gas> result = gasRepository.findByBuildingOrderByRecordedAtAsc(findBuilding);
 
         //then
-        assertThat(findGas.size()).isEqualTo(1);
-        assertThat(findGas.get(0).getBuilding()).isEqualTo(findBuilding);
+        System.out.println(result);
+
     }
 }

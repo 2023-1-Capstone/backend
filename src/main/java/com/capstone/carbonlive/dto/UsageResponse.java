@@ -6,4 +6,11 @@ import lombok.Data;
 public class UsageResponse {
     private String year;
     private int[] usages = new int[12];
+
+    public UsageResponse() {
+    }
+
+    public UsageResponse(String year) {
+        this.year = year;
+    }
 }

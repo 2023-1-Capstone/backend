@@ -19,11 +19,11 @@ public class GasController {
 
     private final GasService gasService;
 
-    @GetMapping("/gas/{buildingCode}")
-    public ResponseEntity findGasByBuilding(@PathVariable("buildingCode") Long buildingCode) {
-        List<UsageResponse> result = gasService.findByBuilding(buildingCode);
-
-        return ResponseEntity.ok(new UsageResult(result));
-    }
+//    @GetMapping("/gas/{buildingCode}")
+//    public ResponseEntity findGasByBuilding(@PathVariable("buildingCode") Long buildingCode) {
+//        List<UsageResponse> result = gasService.findByBuilding(buildingCode);
+//
+//        return ResponseEntity.ok(new UsageResult(result));
+//    }
 
 }

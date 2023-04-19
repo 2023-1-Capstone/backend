@@ -2,12 +2,9 @@ package com.capstone.carbonlive.repository;
 
 import com.capstone.carbonlive.entity.Building;
 import com.capstone.carbonlive.entity.Electricity;
-import jakarta.persistence.EntityNotFoundException;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -18,15 +15,15 @@ import java.util.stream.IntStream;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
-@Transactional
 class ElectricityRepositoryTest {
     @Autowired
     private ElectricityRepository electricityRepository;
     @Autowired
     private BuildingRepository buildingRepository;
 
-    @BeforeEach
-    void setUp(){
+    @Test
+    void findAllByIdTest(){
+        // given
         Building sampleBuilding = Building.builder()
                 .name("본관")
                 .elecArea(new BigDecimal("10"))
@@ -45,14 +42,8 @@ class ElectricityRepositoryTest {
             tempList.add(e);
         });
         electricityRepository.saveAll(tempList);
-    }
-
-    @Test
-    void findAllByIdTest(){
-        // given
-        Building building = buildingRepository.findById(1L).orElseThrow(EntityNotFoundException::new);
         // when
-        List<Electricity> list = electricityRepository.findAllByBuilding(building);
+        List<Electricity> list = electricityRepository.findAllByBuilding(sampleBuilding);
 
         // then
         System.out.println("list = " + list);

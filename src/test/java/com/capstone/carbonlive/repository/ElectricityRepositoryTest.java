@@ -2,6 +2,8 @@ package com.capstone.carbonlive.repository;
 
 import com.capstone.carbonlive.entity.Building;
 import com.capstone.carbonlive.entity.Electricity;
+import jakarta.persistence.EntityNotFoundException;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -21,9 +23,8 @@ class ElectricityRepositoryTest {
     @Autowired
     private BuildingRepository buildingRepository;
 
-    @Test
-    void findAllByIdTest(){
-        // given
+    @BeforeEach
+    void setUp(){
         Building sampleBuilding = Building.builder()
                 .name("본관")
                 .elecArea(new BigDecimal("10"))
@@ -42,8 +43,14 @@ class ElectricityRepositoryTest {
             tempList.add(e);
         });
         electricityRepository.saveAll(tempList);
+    }
+
+    @Test
+    void findAllByIdTest(){
+        // given
+        Building building = buildingRepository.findById(1L).orElseThrow(EntityNotFoundException::new);
         // when
-        List<Electricity> list = electricityRepository.findAllByBuilding(sampleBuilding);
+        List<Electricity> list = electricityRepository.findAllByBuilding(building);
 
         // then
         System.out.println("list = " + list);

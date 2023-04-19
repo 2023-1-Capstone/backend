@@ -5,8 +5,6 @@ import lombok.*;
 
 import java.time.LocalDate;
 
-import static jakarta.persistence.FetchType.LAZY;
-
 @Entity
 @Getter
 @ToString
@@ -24,7 +22,7 @@ public class Gas {
     @Column(nullable = false)
     private int usages;
 
-    @ManyToOne(fetch = LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "BUILDING_ID", nullable = false)
     @ToString.Exclude
     private Building building;

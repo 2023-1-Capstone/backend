@@ -7,5 +7,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 
 public interface GasRepository extends JpaRepository<Gas, Long> {
-    List<Gas> findByBuilding(Building building);
+//    List<Gas> findByBuilding(Building building);
+    List<Gas> findByBuildingOrderByRecordedAtAsc(Building building);
 }

@@ -49,6 +49,8 @@ public class ElectricityServiceImpl implements ElectricityService {
                 Arrays.fill(usages, 0);
             }
 
+            int eMonth = e.getRecordedAt().getMonth().getValue() - 1;
+            usages[eMonth] = e.getUsages();
         }
         if (year > 0){
             insertUsageResponse(result, year, usages);

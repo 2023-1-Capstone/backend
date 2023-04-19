@@ -1,9 +1,13 @@
-package com.capstone.carbonlive.repository;
+package com.capstone.carbonlive.service;
 
+import com.capstone.carbonlive.dto.UsageResponse;
+import com.capstone.carbonlive.dto.UsageResult;
 import com.capstone.carbonlive.entity.Building;
 import com.capstone.carbonlive.entity.Electricity;
-import jakarta.persistence.EntityNotFoundException;
+import com.capstone.carbonlive.repository.BuildingRepository;
+import com.capstone.carbonlive.repository.ElectricityRepository;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -19,11 +23,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
 @Transactional
-class ElectricityRepositoryTest {
+class ElectricityServiceTest {
     @Autowired
-    private ElectricityRepository electricityRepository;
+    private ElectricityService electricityService;
     @Autowired
     private BuildingRepository buildingRepository;
+    @Autowired
+    private ElectricityRepository electricityRepository;
 
     @BeforeEach
     void setUp(){
@@ -40,7 +46,7 @@ class ElectricityRepositoryTest {
             Electricity e = Electricity.builder()
                     .recordedAt(LocalDate.of(year, i, 1))
                     .building(sampleBuilding)
-                    .usages(12000 + i)
+                    .usages(i)
                     .build();
             tempList.add(e);
         });
@@ -48,15 +54,26 @@ class ElectricityRepositoryTest {
     }
 
     @Test
-    void findAllByIdTest(){
-        // given
-        Building building = buildingRepository.findById(1L).orElseThrow(EntityNotFoundException::new);
-        // when
-        List<Electricity> list = electricityRepository.findAllByBuilding(building);
+    @DisplayName("개별 건물 전기 사용량 값 년도/월 별 정리 확인")
+    void getEachAll() {
+        UsageResult usageResult = electricityService.getEachAll(1L);
+        System.out.println("usageResult = " + usageResult);
 
-        // then
-        System.out.println("list = " + list);
-        assertThat(list.size()).isEqualTo(9);
+        String[] expectYear = {"2018", "2019"};
+        int[][] expectUsages = { {0, 0, 0, 0, 0, 6, 7, 8, 9, 10, 0, 0}, {0, 2, 3, 4, 5, 0, 0, 0, 0, 0, 0, 0} };
+        for (int i = 0; i < usageResult.getResult().size(); i++){
+
+
+            UsageResponse curUsageResponse = usageResult.getResult().get(i);
+            String curYear = curUsageResponse.getYear();
+            int[] curUsages = curUsageResponse.getUsages();
+
+            assertThat(curYear).isEqualTo(expectYear[i]);
+
+            for (int j = 0; j < 12; j++){
+                assertThat(curUsages[j]).isEqualTo(expectUsages[i][j]);
+            }
+        }
 
     }
 }

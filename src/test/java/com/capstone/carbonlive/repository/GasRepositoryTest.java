@@ -22,34 +22,6 @@ class GasRepositoryTest {
     @Autowired GasRepository gasRepository;
     @Autowired BuildingRepository buildingRepository;
 
-//    @Test
-//    public void findByBuilding() throws Exception {
-//        //given
-//        Building building = Building.builder()
-//                .name("building1")
-//                .gasArea(new BigDecimal(1111.11))
-//                .elecArea(new BigDecimal(2222.22))
-//                .gasDescription(null)
-//                .elecDescription(null)
-//                .build();
-//        buildingRepository.save(building);
-//
-//        Gas gas = Gas.builder()
-//                .recordedAt(LocalDate.now())
-//                .usages(111)
-//                .building(building)
-//                .build();
-//        gasRepository.save(gas);
-//
-//        //when
-//        Building findBuilding = buildingRepository.findById(1L).orElseThrow(() -> new RuntimeException());
-//        List<Gas> findGas = gasRepository.findByBuilding(findBuilding);
-//
-//        //then
-//        assertThat(findGas.size()).isEqualTo(1);
-//        assertThat(findGas.get(0).getBuilding()).isEqualTo(findBuilding);
-//    }
-
     @Test
     public void findByBuildingOrderByRecordedAtDesc() throws Exception {
         //given
@@ -95,7 +67,8 @@ class GasRepositoryTest {
         List<Gas> result = gasRepository.findByBuildingOrderByRecordedAtAsc(findBuilding);
 
         //then
-        System.out.println(result);
-
+        assertThat(result.size()).isEqualTo(2);
+        assertThat(result.get(0)).isEqualTo(gas);
+        assertThat(result.get(1)).isEqualTo(gas2);
     }
 }

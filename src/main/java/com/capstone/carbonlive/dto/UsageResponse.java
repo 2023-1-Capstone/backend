@@ -4,13 +4,13 @@ import lombok.Data;
 
 @Data
 public class UsageResponse {
-    private String year;
+    private int year;
     private int[] usages = new int[12];
 
     public UsageResponse() {
     }
 
-    public UsageResponse(String year) {
+    public UsageResponse(int year) {
         this.year = year;
     }
 }

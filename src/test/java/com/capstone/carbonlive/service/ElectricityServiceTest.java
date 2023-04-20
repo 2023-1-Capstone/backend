@@ -56,16 +56,15 @@ class ElectricityServiceTest {
     @Test
     @DisplayName("개별 건물 전기 사용량 값 년도/월 별 정리 확인")
     void getEachAll() {
-        UsageResult usageResult = electricityService.getEachAll(1L);
+        Building building = buildingRepository.findByName("본관");
+        UsageResult usageResult = electricityService.getEachAll(building.getId());
         System.out.println("usageResult = " + usageResult);
 
-        String[] expectYear = {"2018", "2019"};
+        int[] expectYear = {2018, 2019};
         int[][] expectUsages = { {0, 0, 0, 0, 0, 6, 7, 8, 9, 10, 0, 0}, {0, 2, 3, 4, 5, 0, 0, 0, 0, 0, 0, 0} };
         for (int i = 0; i < usageResult.getResult().size(); i++){
-
-
             UsageResponse curUsageResponse = usageResult.getResult().get(i);
-            String curYear = curUsageResponse.getYear();
+            int curYear = curUsageResponse.getYear();
             int[] curUsages = curUsageResponse.getUsages();
 
             assertThat(curYear).isEqualTo(expectYear[i]);

@@ -2,7 +2,6 @@ package com.capstone.carbonlive.repository;
 
 import com.capstone.carbonlive.entity.Building;
 import com.capstone.carbonlive.entity.Gas;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -12,8 +11,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
-import static org.assertj.core.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
 @Transactional
@@ -63,7 +61,8 @@ class GasRepositoryTest {
         gasRepository.save(gas3);
 
         //when
-        Building findBuilding = buildingRepository.findById(1L).orElseThrow(() -> new RuntimeException());
+        Building building1 = buildingRepository.findByName("building1");
+        Building findBuilding = buildingRepository.findById(building1.getId()).orElseThrow(() -> new RuntimeException());
         List<Gas> result = gasRepository.findByBuildingOrderByRecordedAtAsc(findBuilding);
 
         //then

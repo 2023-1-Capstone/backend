@@ -4,6 +4,7 @@ import com.capstone.carbonlive.dto.UsageResult;
 import com.capstone.carbonlive.entity.Water;
 import com.capstone.carbonlive.repository.WaterRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -17,7 +18,7 @@ public class WaterServiceImpl implements WaterService{
 
     @Override
     public UsageResult getAll() {
-        List<Water> waterList = waterRepository.findAll();
+        List<Water> waterList = waterRepository.findAll(Sort.by("recordedAt").ascending());
         return getUsageResult(waterList);
     }
 }

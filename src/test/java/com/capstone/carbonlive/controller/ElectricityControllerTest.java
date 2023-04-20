@@ -9,7 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
-import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.ArrayList;
@@ -30,7 +29,7 @@ class ElectricityControllerTest extends AbstractRestDocsTest {
     private ElectricityService electricityService;
     private final String uri = "/api/electricity/";
     @Test
-    @WithMockUser // 스프링 시큐리티 회피
+    //@WithMockUser // 스프링 시큐리티 회피
     void getElectricityEach() throws Exception {
         int[] usages = IntStream.rangeClosed(1, 12).toArray();
         ArrayList<UsageResponse> list = new ArrayList<>();

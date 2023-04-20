@@ -2,8 +2,8 @@ package com.capstone.carbonlive.service;
 
 import com.capstone.carbonlive.dto.UsageResult;
 import com.capstone.carbonlive.entity.Building;
-import com.capstone.carbonlive.repository.BuildingRepository;
 import com.capstone.carbonlive.entity.Gas;
+import com.capstone.carbonlive.repository.BuildingRepository;
 import com.capstone.carbonlive.repository.GasRepository;
 import com.capstone.carbonlive.service.common.GetUsageResult;
 import lombok.RequiredArgsConstructor;
@@ -24,6 +24,6 @@ public class GasService {
 
         List<Gas> gasList = gasRepository.findByBuildingOrderByRecordedAtAsc(building);
 
-        return GetUsageResult.getGasUsageResult(gasList);
+        return GetUsageResult.getUsageResult(gasList);
     }
 }

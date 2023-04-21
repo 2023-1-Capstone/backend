@@ -3,10 +3,10 @@ package com.capstone.carbonlive.controller;
 import com.capstone.carbonlive.entity.Building;
 import com.capstone.carbonlive.repository.BuildingRepository;
 import com.capstone.carbonlive.restdocs.AbstractRestDocsTest;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.web.servlet.MockMvc;
@@ -20,7 +20,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @AutoConfigureMockMvc
 @SpringBootTest
-@AutoConfigureRestDocs
 class BuildingControllerTest extends AbstractRestDocsTest {
 
     @Autowired MockMvc mockMvc;
@@ -28,10 +27,8 @@ class BuildingControllerTest extends AbstractRestDocsTest {
     @Autowired BuildingController buildingController;
     @Autowired BuildingRepository buildingRepository;
 
-    @Test
-    @DisplayName("건물 정보 받아오기")
-    public void findBuildings() throws Exception {
-        //given
+    @BeforeEach
+    void beforeEach() {
         buildingRepository.save(Building.builder()
                 .name("building1")
                 .gasArea(new BigDecimal(1111.11))
@@ -46,8 +43,12 @@ class BuildingControllerTest extends AbstractRestDocsTest {
                 .gasDescription(null)
                 .elecDescription(null)
                 .build());
+    }
 
-        //when, then
+    @Test
+    @DisplayName("건물 정보 받아오기")
+    public void findBuildings() throws Exception {
+
         this.mockMvc.perform(get("/api/buildings"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.result[0].id").value(1L))

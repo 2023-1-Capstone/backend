@@ -12,7 +12,6 @@ import java.time.LocalDate;
 
 @MappedSuperclass
 @Getter
-@ToString
 @SuperBuilder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public abstract class BaseEntity {

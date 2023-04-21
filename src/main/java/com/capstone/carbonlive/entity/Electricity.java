@@ -7,7 +7,6 @@ import java.time.LocalDate;
 
 @Entity
 @Getter
-@ToString
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Electricity extends BaseEntity{
 
@@ -26,5 +25,14 @@ public class Electricity extends BaseEntity{
         this.recordedAt = recordedAt;
         this.usages = usages;
         this.building = building;
+    }
+
+    @Override
+    public String toString() {
+        return "Electricity{" +
+                "recordedAt=" + recordedAt +
+                ", usages=" + usages +
+                ", id=" + id +
+                '}';
     }
 }

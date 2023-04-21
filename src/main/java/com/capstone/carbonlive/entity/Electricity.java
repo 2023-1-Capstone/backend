@@ -9,17 +9,11 @@ import java.time.LocalDate;
 @Getter
 @ToString
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Electricity {
+public class Electricity extends BaseEntity{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ELECTRICITY_ID")
     private Long id;
-
-    @Column(nullable = false)
-    private LocalDate recordedAt;
-
-    @Column(nullable = false)
-    private int usages;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "BUILDING_ID", nullable = false)

@@ -5,13 +5,14 @@ import com.capstone.carbonlive.entity.Building;
 import com.capstone.carbonlive.entity.Electricity;
 import com.capstone.carbonlive.repository.BuildingRepository;
 import com.capstone.carbonlive.repository.ElectricityRepository;
-import com.capstone.carbonlive.service.common.GetUsageResult;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+
+import static com.capstone.carbonlive.service.common.GetUsageResult.getUsageResult;
 
 @Service
 @RequiredArgsConstructor
@@ -26,6 +27,6 @@ public class ElectricityServiceImpl implements ElectricityService {
         List<Electricity> electricityList = electricityRepository.findAllByBuilding(building,
                 Sort.by("recordedAt").ascending());
 
-        return GetUsageResult.getElecUsageResult(electricityList);
+        return getUsageResult(electricityList);
     }
 }

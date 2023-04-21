@@ -1,10 +1,7 @@
 package com.capstone.carbonlive.entity;
 
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 
 import java.time.LocalDate;
 
@@ -12,18 +9,15 @@ import java.time.LocalDate;
 @Getter
 @ToString
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Water {
-
+public class Water extends BaseEntity{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "WATER_ID")
     private Long id;
 
-    @Column(nullable = false)
-    private LocalDate recordedAt;
-
-    @Column(nullable = false)
-    private int usages;
-
-
+    @Builder(toBuilder = true)
+    public Water(LocalDate recordedAt, int usages){
+        this.recordedAt = recordedAt;
+        this.usages = usages;
+    }
 }

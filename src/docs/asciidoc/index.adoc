@@ -13,3 +13,13 @@ include::{snippets}/building-controller-test/find-buildings/http-request.adoc[]
 === Response
 
 include::{snippets}/building-controller-test/find-buildings/http-response.adoc[]
+
+== 2. 건물별 가스 사용량 받아오기
+
+=== Request
+
+include::{snippets}/gas-controller-test/find-gas-by-building/http-request.adoc[]
+
+=== Response
+
+include::{snippets}/gas-controller-test/find-gas-by-building/http-response.adoc[]

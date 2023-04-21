@@ -57,7 +57,8 @@ class GasServiceTest {
     @DisplayName("건물별 가스 정보 출력")
     public void findByBuilding() throws Exception {
         //given, when
-        UsageResult result = gasService.findByBuilding(1L);
+        Building findBuilding = buildingRepository.findByName("building1");
+        UsageResult result = gasService.findByBuilding(findBuilding.getId());
 
         //then
         System.out.println("result = " + result);

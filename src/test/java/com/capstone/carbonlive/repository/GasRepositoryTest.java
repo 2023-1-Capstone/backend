@@ -63,7 +63,7 @@ class GasRepositoryTest {
         gasRepository.save(gas3);
 
         //when
-        Building findBuilding = buildingRepository.findById(1L).orElseThrow(() -> new RuntimeException());
+        Building findBuilding = buildingRepository.findByName("building1");
         List<Gas> result = gasRepository.findByBuildingOrderByRecordedAtAsc(findBuilding);
 
         //then

@@ -30,6 +30,7 @@ public abstract class AbstractRestDocsTest { // API 명세를 만드는 테스�
             final RestDocumentationContextProvider restDocumentation) {
         this.mockMvc = MockMvcBuilders.webAppContextSetup(context)
                 .apply(documentationConfiguration(restDocumentation))
+                // .apply(springSecurity())
                 .alwaysDo(MockMvcResultHandlers.print())
                 .alwaysDo(restDocs)
                 .addFilters(new CharacterEncodingFilter("UTF-8", true))

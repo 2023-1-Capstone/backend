@@ -9,18 +9,12 @@ import java.time.LocalDate;
 @Getter
 @ToString
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Gas {
+public class Gas extends BaseEntity{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "GAS_ID")
     private Long id;
-
-    @Column(nullable = false)
-    private LocalDate recordedAt;
-
-    @Column(nullable = false)
-    private int usages;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "BUILDING_ID", nullable = false)

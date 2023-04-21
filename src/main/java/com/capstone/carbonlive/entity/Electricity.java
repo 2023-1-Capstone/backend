@@ -10,6 +10,7 @@ import java.time.LocalDate;
 @ToString
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Electricity {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ELECTRICITY_ID")

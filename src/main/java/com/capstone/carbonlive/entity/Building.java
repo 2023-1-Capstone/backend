@@ -32,8 +32,7 @@ public class Building {
     private String elecDescription;
 
     @Builder(toBuilder = true)
-    public Building(Long id, String name, BigDecimal gasArea, BigDecimal elecArea, String gasDescription, String elecDescription) {
-        this.id = id;
+    public Building(String name, BigDecimal gasArea, BigDecimal elecArea, String gasDescription, String elecDescription) {
         this.name = name;
         this.gasArea = gasArea;
         this.elecArea = elecArea;

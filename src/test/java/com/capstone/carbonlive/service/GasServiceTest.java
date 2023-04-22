@@ -15,7 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.*;
 
 @SpringBootTest
 @Transactional
@@ -36,32 +36,29 @@ class GasServiceTest {
                 .build();
         buildingRepository.save(building);
 
-        Gas gas = Gas.builder()
+        gasRepository.save(Gas.builder()
                 .recordedAt(LocalDate.of(2022, 2, 1))
                 .usages(111)
                 .building(building)
-                .build();
-        gasRepository.save(gas);
-        Gas gas2 = Gas.builder()
+                .build());
+        gasRepository.save(Gas.builder()
                 .recordedAt(LocalDate.of(2022, 12, 1))
                 .usages(222)
                 .building(building)
-                .build();
-        gasRepository.save(gas2);
-        Gas gas3 = Gas.builder()
+                .build());
+        gasRepository.save(Gas.builder()
                 .recordedAt(LocalDate.of(2022, 7, 1))
                 .usages(333)
                 .building(building)
-                .build();
-        gasRepository.save(gas3);
+                .build());
     }
 
     @Test
-    @DisplayName("건물별 가스 정보")
+    @DisplayName("건물별 가스 정보 출력")
     public void findByBuilding() throws Exception {
         //given, when
-        Building building = buildingRepository.findByName("building1");
-        UsageResult result = gasService.findByBuilding(building.getId());
+        Building findBuilding = buildingRepository.findByName("building1");
+        UsageResult result = gasService.findByBuilding(findBuilding.getId());
 
         //then
         System.out.println("result = " + result);

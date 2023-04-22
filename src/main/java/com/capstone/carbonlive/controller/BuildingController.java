@@ -19,9 +19,11 @@ public class BuildingController {
     private final BuildingService buildingService;
 
     @GetMapping("/buildings")
-    public ResponseEntity findBuildings() {
+    public ResponseEntity<BuildingResult> findBuildings() {
+        System.out.println("BuildingController.findBuildings");
         List<BuildingResponse> result = buildingService.findAll();
 
+        System.out.println("result = " + result);
         return ResponseEntity.ok(new BuildingResult(result));
     }
 }

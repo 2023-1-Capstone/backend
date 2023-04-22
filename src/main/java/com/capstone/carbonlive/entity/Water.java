@@ -10,6 +10,7 @@ import java.time.LocalDate;
 @ToString
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Water extends BaseEntity{
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "WATER_ID")

@@ -8,8 +8,8 @@ import java.time.LocalDate;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@ToString
 public class Carbon extends BaseEntity{
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "CARBON_ID")
@@ -25,5 +25,14 @@ public class Carbon extends BaseEntity{
         this.recordedAt = recordedAt;
         this.usages = usages;
         this.building = building;
+    }
+
+    @Override
+    public String toString() {
+        return "Carbon{" +
+                "recordedAt=" + recordedAt +
+                ", usages=" + usages +
+                ", id=" + id +
+                '}';
     }
 }

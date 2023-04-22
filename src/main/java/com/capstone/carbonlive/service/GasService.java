@@ -8,11 +8,15 @@ import com.capstone.carbonlive.repository.GasRepository;
 import com.capstone.carbonlive.service.common.GetUsageResult;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+import static com.capstone.carbonlive.service.common.GetUsageResult.*;
+
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class GasService {
 
     private final BuildingRepository buildingRepository;
@@ -24,6 +28,6 @@ public class GasService {
 
         List<Gas> gasList = gasRepository.findByBuildingOrderByRecordedAtAsc(building);
 
-        return GetUsageResult.getUsageResult(gasList);
+        return getUsageResult(gasList);
     }
 }

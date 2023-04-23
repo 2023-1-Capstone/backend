@@ -1,18 +1,18 @@
 package com.capstone.carbonlive.service;
 
+import com.capstone.carbonlive.dto.UsageResponse;
 import com.capstone.carbonlive.dto.UsageResult;
 import com.capstone.carbonlive.entity.Building;
 import com.capstone.carbonlive.entity.Gas;
 import com.capstone.carbonlive.repository.BuildingRepository;
 import com.capstone.carbonlive.repository.GasRepository;
-import com.capstone.carbonlive.service.common.GetUsageResult;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-import static com.capstone.carbonlive.service.common.GetUsageResult.*;
+import static com.capstone.carbonlive.service.common.GetUsageResult.getUsageResult;
 
 @Service
 @RequiredArgsConstructor
@@ -22,7 +22,7 @@ public class GasService {
     private final BuildingRepository buildingRepository;
     private final GasRepository gasRepository;
 
-    public UsageResult findByBuilding(Long buildingId) {
+    public UsageResult<UsageResponse> findByBuilding(Long buildingId) {
         Building building = buildingRepository.findById(buildingId).orElseThrow(
                 () -> new RuntimeException());
 

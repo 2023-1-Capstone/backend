@@ -1,5 +1,6 @@
 package com.capstone.carbonlive.service;
 
+import com.capstone.carbonlive.dto.UsageResponse;
 import com.capstone.carbonlive.dto.UsageResult;
 import com.capstone.carbonlive.entity.Water;
 import com.capstone.carbonlive.repository.WaterRepository;
@@ -43,7 +44,7 @@ class WaterServiceTest {
         int[] expectYear = {2018, 2019};
         int[][] expectUsages = { {1, 2, 3, 4, 5, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 6, 7, 8, 9, 10, 0, 0} };
         // when
-        UsageResult ascResult = waterService.getAll();
+        UsageResult<UsageResponse> ascResult = waterService.getAll();
         // then
         for (int i = 0; i < 2; i++) {
             assertThat(ascResult.getResult().get(i).getYear()).isEqualTo(expectYear[i]);

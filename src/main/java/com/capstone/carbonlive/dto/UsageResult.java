@@ -5,10 +5,10 @@ import lombok.Data;
 import java.util.List;
 
 @Data
-public class UsageResult {
-    private List<UsageResponse> result;
+public class UsageResult<T> {
+    private List<T> result;
 
-    public UsageResult(List<UsageResponse> result) {
+    public UsageResult(List<T> result) {
         this.result = result;
     }
 }

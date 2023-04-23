@@ -1,5 +1,6 @@
 package com.capstone.carbonlive.service;
 
+import com.capstone.carbonlive.dto.UsageResponse;
 import com.capstone.carbonlive.dto.UsageResult;
 import com.capstone.carbonlive.entity.Building;
 import com.capstone.carbonlive.entity.Gas;
@@ -15,7 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
 @Transactional
@@ -58,7 +59,7 @@ class GasServiceTest {
     public void findByBuilding() throws Exception {
         //given, when
         Building findBuilding = buildingRepository.findByName("building1");
-        UsageResult result = gasService.findByBuilding(findBuilding.getId());
+        UsageResult<UsageResponse> result = gasService.findByBuilding(findBuilding.getId());
 
         //then
         System.out.println("result = " + result);

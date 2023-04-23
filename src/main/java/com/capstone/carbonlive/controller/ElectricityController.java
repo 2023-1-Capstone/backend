@@ -1,5 +1,6 @@
 package com.capstone.carbonlive.controller;
 
+import com.capstone.carbonlive.dto.UsageResponse;
 import com.capstone.carbonlive.dto.UsageResult;
 import com.capstone.carbonlive.service.ElectricityService;
 import lombok.RequiredArgsConstructor;
@@ -15,8 +16,8 @@ import org.springframework.web.bind.annotation.RestController;
 public class ElectricityController {
     private final ElectricityService electricityService;
     @GetMapping("/{buildingCode}")
-    public ResponseEntity<UsageResult> getElectricityEach(@PathVariable(name = "buildingCode") Long id){
-        UsageResult usageResult = electricityService.getEachAll(id);
+    public ResponseEntity<UsageResult<UsageResponse>> getElectricityEach(@PathVariable(name = "buildingCode") Long id){
+        UsageResult<UsageResponse> usageResult = electricityService.getEachAll(id);
         return ResponseEntity.ok(usageResult);
     }
 }

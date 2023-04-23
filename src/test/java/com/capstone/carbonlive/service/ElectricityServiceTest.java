@@ -57,7 +57,7 @@ class ElectricityServiceTest {
     @DisplayName("개별 건물 전기 사용량 값 년도/월 별 정리 확인")
     void getEachAll() {
         Building building = buildingRepository.findByName("본관");
-        UsageResult usageResult = electricityService.getEachAll(building.getId());
+        UsageResult<UsageResponse> usageResult = electricityService.getEachAll(building.getId());
         System.out.println("usageResult = " + usageResult);
 
         int[] expectYear = {2018, 2019};

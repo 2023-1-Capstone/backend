@@ -9,8 +9,8 @@ import java.util.Arrays;
 import java.util.List;
 
 public class GetUsageResult {
-    public static <T extends BaseEntity> UsageResult getUsageResult(List<T> ascDataList) {
-        UsageResult result = new UsageResult(new ArrayList<>());
+    public static <T extends BaseEntity> UsageResult<UsageResponse> getUsageResult(List<T> ascDataList) {
+        UsageResult<UsageResponse> result = new UsageResult<>(new ArrayList<>());
 
         int year = -1;
         int[] usages = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
@@ -35,7 +35,7 @@ public class GetUsageResult {
         return result;
     }
 
-    private static void insertUsageResponse(UsageResult result, int year, int[] usages) {
+    private static void insertUsageResponse(UsageResult<UsageResponse> result, int year, int[] usages) {
         UsageResponse usageResponse = new UsageResponse();
         usageResponse.setYear(year);
         for (int i = 0; i < usageResponse.getUsages().length; i++)

@@ -1,5 +1,6 @@
 package com.capstone.carbonlive.controller;
 
+import com.capstone.carbonlive.dto.UsageResponse;
 import com.capstone.carbonlive.dto.UsageResult;
 import com.capstone.carbonlive.service.GasService;
 import lombok.RequiredArgsConstructor;
@@ -18,8 +19,8 @@ public class GasController {
     private final GasService gasService;
 
     @GetMapping("/gas/{buildingCode}")
-    public ResponseEntity<UsageResult> findGasByBuilding(@PathVariable("buildingCode") Long buildingCode) {
-        UsageResult result = gasService.findByBuilding(buildingCode);
+    public ResponseEntity<UsageResult<UsageResponse>> findGasByBuilding(@PathVariable("buildingCode") Long buildingCode) {
+        UsageResult<UsageResponse> result = gasService.findByBuilding(buildingCode);
 
         return ResponseEntity.ok(result);
     }

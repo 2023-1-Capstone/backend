@@ -15,7 +15,6 @@ import java.util.stream.IntStream;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.times;
-
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.*;
@@ -50,7 +49,7 @@ class ElectricityControllerTest extends AbstractRestDocsTest {
         list.add(response1);
         list.add(response2);
 
-        UsageResult result = new UsageResult(list);
+        UsageResult<UsageResponse> result = new UsageResult<>(list);
         System.out.println("result = " + result);
         given(electricityService.getEachAll(1L))
                 .willReturn(result);

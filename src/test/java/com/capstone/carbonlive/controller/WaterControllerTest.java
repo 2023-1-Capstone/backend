@@ -47,7 +47,7 @@ class WaterControllerTest extends AbstractRestDocsTest {
         responses.add(response1);
         responses.add(response2);
 
-        UsageResult usageResult = new UsageResult(responses);
+        UsageResult<UsageResponse> usageResult = new UsageResult<>(responses);
 
         System.out.println("usageResult = " + usageResult);
 

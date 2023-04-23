@@ -1,5 +1,6 @@
 package com.capstone.carbonlive.service;
 
+import com.capstone.carbonlive.dto.UsageResponse;
 import com.capstone.carbonlive.dto.UsageResult;
 import com.capstone.carbonlive.entity.Building;
 import com.capstone.carbonlive.entity.Electricity;
@@ -21,7 +22,7 @@ public class ElectricityServiceImpl implements ElectricityService {
     private final BuildingRepository buildingRepository;
 
     @Override
-    public UsageResult getEachAll(Long id) {
+    public UsageResult<UsageResponse> getEachAll(Long id) {
         Building building = buildingRepository.findById(id).orElseThrow(EntityNotFoundException::new);
 
         List<Electricity> electricityList = electricityRepository.findAllByBuilding(building,

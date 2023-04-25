@@ -39,3 +39,6 @@ out/
 ### Rest Docs ###
 /src/docs
 /src/main/resources/static/docs
+
+### docker ###
+Dockerfile

@@ -5,13 +5,10 @@ import com.capstone.carbonlive.entity.Gas;
 import com.capstone.carbonlive.repository.BuildingRepository;
 import com.capstone.carbonlive.repository.GasRepository;
 import com.capstone.carbonlive.restdocs.AbstractRestDocsTest;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.web.servlet.ResultActions;
@@ -37,13 +34,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 @SpringBootTest
 @Transactional
-@AutoConfigureRestDocs
 class GasControllerTest extends AbstractRestDocsTest {
 
     @Autowired GasRepository gasRepository;
     @Autowired BuildingRepository buildingRepository;
 
-    @PersistenceContext EntityManager em;
+    private Long buildingId;
 
     @BeforeEach
     void beforeEach() {
@@ -55,6 +51,8 @@ class GasControllerTest extends AbstractRestDocsTest {
                 .elecDescription(null)
                 .build();
         buildingRepository.save(building);
+        this.buildingId = building.getId();
+
         for (int i = 1; i < 13; i++) {
             gasRepository.save(Gas.builder().
                     recordedAt(LocalDate.of(2022, i, 01))
@@ -67,14 +65,13 @@ class GasControllerTest extends AbstractRestDocsTest {
                     .building(building)
                     .build());
         }
-        em.flush();
     }
 
     @Test
     @DisplayName("건물별 가스 사용량 받아오기")
     public void findGasByBuilding() throws Exception {
         //when
-        ResultActions result = this.mockMvc.perform(get("/api/gas/{buildingCode}", 1L));
+        ResultActions result = this.mockMvc.perform(get("/api/gas/{buildingCode}", buildingId));
 
         //then
         result.andExpect(status().isOk())

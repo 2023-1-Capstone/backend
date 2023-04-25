@@ -1,5 +1,6 @@
 package com.capstone.carbonlive.service.common;
 
+import com.capstone.carbonlive.dto.SeasonResponse;
 import com.capstone.carbonlive.dto.UsageResponse;
 import com.capstone.carbonlive.dto.UsageResult;
 import com.capstone.carbonlive.entity.BaseEntity;
@@ -9,7 +10,7 @@ import java.util.Arrays;
 import java.util.List;
 
 public class GetUsageResult {
-    public static <T extends BaseEntity> UsageResult<UsageResponse> getUsageResult(List<T> ascDataList) {
+    public static <T extends BaseEntity> UsageResult<UsageResponse> getBuildingUsageResult(List<T> ascDataList) {
         UsageResult<UsageResponse> result = new UsageResult<>(new ArrayList<>());
 
         int year = -1;
@@ -41,5 +42,17 @@ public class GetUsageResult {
         for (int i = 0; i < usageResponse.getUsages().length; i++)
             usageResponse.getUsages()[i] = usages[i];
         result.getResult().add(usageResponse);
+    }
+
+    public static <T extends BaseEntity> UsageResult<SeasonResponse> getSeasonUsageResult(List<T> ascDataList) {
+        List<Integer> yearList = new ArrayList<>();
+        for (T data : ascDataList) {
+            int curYear = data.getRecordedAt().getYear();
+            if (!yearList.contains(curYear))
+                yearList.add(curYear);
+        }
+
+
+        return null;
     }
 }

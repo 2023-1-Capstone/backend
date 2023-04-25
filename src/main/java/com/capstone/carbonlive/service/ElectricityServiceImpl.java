@@ -42,7 +42,7 @@ public class ElectricityServiceImpl implements ElectricityService {
             UsageWithNameResponse response = new UsageWithNameResponse();
             response.setName(b.getName());
             UsageResult<UsageResponse> usageResult = getEachAll(b.getId());
-            response.setUsages(usageResult);
+            response.setUsagesList(usageResult.getResult());
             result.add(response);
         }
 

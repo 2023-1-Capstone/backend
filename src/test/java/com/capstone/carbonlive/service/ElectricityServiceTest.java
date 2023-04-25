@@ -94,7 +94,7 @@ class ElectricityServiceTest {
         assertThat(result.get(0).getName()).isEqualTo(this.name[0]);
         assertThat(result.get(1).getName()).isEqualTo(this.name[1]);
 
-        IntStream.rangeClosed(0, 11).forEach(i -> assertThat(result.get(1).getUsages().getResult().get(0).getUsages()[i]).isEqualTo(expectUsages[0][i]));
+        IntStream.rangeClosed(0, 11).forEach(i -> assertThat(result.get(1).getUsagesList().get(0).getUsages()[i]).isEqualTo(expectUsages[0][i]));
 
     }
 }

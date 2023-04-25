@@ -2,6 +2,7 @@ package com.capstone.carbonlive.service;
 
 import com.capstone.carbonlive.dto.UsageResponse;
 import com.capstone.carbonlive.dto.UsageResult;
+import com.capstone.carbonlive.dto.UsageWithNameResponse;
 import com.capstone.carbonlive.entity.Building;
 import com.capstone.carbonlive.entity.Electricity;
 import com.capstone.carbonlive.repository.BuildingRepository;
@@ -31,26 +32,33 @@ class ElectricityServiceTest {
     @Autowired
     private ElectricityRepository electricityRepository;
 
+    private final String[] name = {"본관", "60주년기념관"};
+    private final int[] expectYear = {2018, 2019};
+    private final int[][] expectUsages = { {0, 0, 0, 0, 0, 6, 7, 8, 9, 10, 0, 0}, {0, 2, 3, 4, 5, 0, 0, 0, 0, 0, 0, 0} };
+
     @BeforeEach
     void setUp(){
-        Building sampleBuilding = Building.builder()
-                .name("본관")
-                .elecArea(new BigDecimal("10"))
-                .gasArea(new BigDecimal("10"))
-                .build();
-        buildingRepository.save(sampleBuilding);
-
-        List<Electricity> tempList = new ArrayList<>();
-        IntStream.rangeClosed(2, 10).forEach(i -> {
-            int year = i > 5 ? 2018 : 2019;
-            Electricity e = Electricity.builder()
-                    .recordedAt(LocalDate.of(year, i, 1))
-                    .building(sampleBuilding)
-                    .usages(i)
+        for (String n : name) {
+            Building sampleBuilding = Building.builder()
+                    .name(n)
+                    .elecArea(new BigDecimal("10"))
+                    .gasArea(new BigDecimal("10"))
                     .build();
-            tempList.add(e);
-        });
-        electricityRepository.saveAll(tempList);
+            buildingRepository.save(sampleBuilding);
+
+            List<Electricity> tempList = new ArrayList<>();
+            IntStream.rangeClosed(2, 10).forEach(i -> {
+                int year = i > 5 ? 2018 : 2019;
+                Electricity e = Electricity.builder()
+                        .recordedAt(LocalDate.of(year, i, 1))
+                        .building(sampleBuilding)
+                        .usages(i)
+                        .build();
+                tempList.add(e);
+            });
+
+            electricityRepository.saveAll(tempList);
+        }
     }
 
     @Test
@@ -60,8 +68,6 @@ class ElectricityServiceTest {
         UsageResult<UsageResponse> usageResult = electricityService.getEachAll(building.getId());
         System.out.println("usageResult = " + usageResult);
 
-        int[] expectYear = {2018, 2019};
-        int[][] expectUsages = { {0, 0, 0, 0, 0, 6, 7, 8, 9, 10, 0, 0}, {0, 2, 3, 4, 5, 0, 0, 0, 0, 0, 0, 0} };
         for (int i = 0; i < usageResult.getResult().size(); i++){
             UsageResponse curUsageResponse = usageResult.getResult().get(i);
             int curYear = curUsageResponse.getYear();
@@ -73,6 +79,22 @@ class ElectricityServiceTest {
                 assertThat(curUsages[j]).isEqualTo(expectUsages[i][j]);
             }
         }
+
+    }
+
+    @Test
+    void getAll(){
+        // when
+        UsageResult<UsageWithNameResponse> usageResult = electricityService.getAll();
+        List<UsageWithNameResponse> result = usageResult.getResult();
+
+        System.out.println("result = " + result);
+        //then
+        assertThat(result.size()).isEqualTo(2);
+        assertThat(result.get(0).getName()).isEqualTo(this.name[0]);
+        assertThat(result.get(1).getName()).isEqualTo(this.name[1]);
+
+        IntStream.rangeClosed(0, 11).forEach(i -> assertThat(result.get(1).getUsages().getResult().get(0).getUsages()[i]).isEqualTo(expectUsages[0][i]));
 
     }
 }

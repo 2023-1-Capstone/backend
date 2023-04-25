@@ -11,4 +11,8 @@ public class UsageResult<T> {
     public UsageResult(List<T> result) {
         this.result = result;
     }
+
+    public void add(T element){
+        this.result.add(element);
+    }
 }

@@ -2,6 +2,7 @@ package com.capstone.carbonlive.controller;
 
 import com.capstone.carbonlive.dto.UsageResponse;
 import com.capstone.carbonlive.dto.UsageResult;
+import com.capstone.carbonlive.dto.UsageWithNameResponse;
 import com.capstone.carbonlive.restdocs.AbstractRestDocsTest;
 import com.capstone.carbonlive.service.ElectricityService;
 import org.junit.jupiter.api.Test;
@@ -74,5 +75,58 @@ class ElectricityControllerTest extends AbstractRestDocsTest {
                 ));
 
         then(electricityService).should(times(1)).getEachAll(1L);
+    }
+
+    @Test
+    void getElectricityAll() throws Exception {
+        // given
+        UsageResult<UsageWithNameResponse> result = new UsageResult<>(new ArrayList<>());
+        UsageWithNameResponse response1 = new UsageWithNameResponse();
+        response1.setName("본관");
+        UsageWithNameResponse response2 = new UsageWithNameResponse();
+        response2.setName("60주년기념관");
+
+        UsageResult<UsageResponse> usageResult = new UsageResult<>(new ArrayList<>());
+        int[] usages1 = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12};
+        int[] usages2 = {13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24};
+        UsageResponse usageResponse1 = new UsageResponse(2017);
+        usageResponse1.setUsages(usages1);
+        UsageResponse usageResponse2 = new UsageResponse(2018);
+        usageResponse2.setUsages(usages2);
+        usageResult.add(usageResponse1);
+        usageResult.add(usageResponse2);
+
+        response1.setUsagesList(usageResult.getResult());
+        response2.setUsagesList(usageResult.getResult());
+
+        result.add(response1);
+        result.add(response2);
+
+        given(electricityService.getAll())
+                .willReturn(result);
+        // when
+        this.mockMvc.perform(get(uri + "/area")
+                            .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.result[0].name").value("본관"))
+                .andExpect(jsonPath("$.result[1].name").value("60주년기념관"))
+                .andExpect(jsonPath("$.result[1].usagesList.length()").value(2))
+                .andExpect(jsonPath("$.result[1].usagesList[0].year").value(2017))
+                .andExpect(jsonPath("$.result[1].usagesList[1].usages[11]").value(24))
+                .andDo(print())
+                .andDo(document("{class-name}/{method-name}",
+                        preprocessRequest(prettyPrint()),
+                        preprocessResponse(prettyPrint()),
+                        responseFields(
+                                fieldWithPath("result").description("결과 반환"),
+                                fieldWithPath("result[].name").description("건물명"),
+                                fieldWithPath("result[].usagesList").description("사용량 데이터"),
+                                fieldWithPath("result[].usagesList[].year").description("해당 사용량 데이터의 년도"),
+                                fieldWithPath("result[].usagesList[].usages").description("월별 사용량(1월-12월)")
+                        )
+                ));
+
+        // then
+        then(electricityService).should(times(1)).getAll();
     }
 }

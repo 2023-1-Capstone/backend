@@ -3,6 +3,7 @@ package com.capstone.carbonlive.service;
 import com.capstone.carbonlive.dto.SeasonResponse;
 import com.capstone.carbonlive.dto.UsageResponse;
 import com.capstone.carbonlive.dto.UsageResult;
+import com.capstone.carbonlive.dto.UsageWithNameResponse;
 import com.capstone.carbonlive.entity.Building;
 import com.capstone.carbonlive.entity.Gas;
 import com.capstone.carbonlive.repository.BuildingRepository;
@@ -12,10 +13,11 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 
-import static com.capstone.carbonlive.service.common.GetUsageResult.*;
 import static com.capstone.carbonlive.service.common.GetUsageResult.getBuildingUsageResult;
+import static com.capstone.carbonlive.service.common.GetUsageResult.getSeasonUsageResult;
 
 @Service
 @RequiredArgsConstructor
@@ -46,14 +48,19 @@ public class GasService {
         return getSeasonUsageResult(gasList);
     }
 
-//    /**
-//     * 계절별 가스 사용량
-//     */
-//    public UsageResult<SeasonResponse> findSeasonData() {
-//        List<Gas> gasList = gasRepository.findAll(Sort.by("recordedAt").ascending());
-//
-//        //getUsageResult
-//
-//        return null;
-//    }
+    public UsageResult<UsageWithNameResponse> findAll() {
+        UsageResult<UsageWithNameResponse> result = new UsageResult<>(new ArrayList<>());
+
+        List<Building> buildings = buildingRepository.findAll();
+        for (Building b : buildings){
+            UsageResult<UsageResponse> usageResult = findByBuilding(b.getId());
+
+            UsageWithNameResponse response = new UsageWithNameResponse();
+            response.setName(b.getName());
+            response.setUsagesList(usageResult.getResult());
+            result.add(response);
+        }
+
+        return result;
+    }
 }

@@ -1,14 +1,17 @@
 package com.capstone.carbonlive.controller;
 
+import com.capstone.carbonlive.dto.SeasonResponse;
 import com.capstone.carbonlive.dto.UsageResponse;
 import com.capstone.carbonlive.dto.UsageResult;
 import com.capstone.carbonlive.dto.UsageWithNameResponse;
 import com.capstone.carbonlive.restdocs.AbstractRestDocsTest;
 import com.capstone.carbonlive.service.ElectricityService;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.test.web.servlet.ResultActions;
 
 import java.util.ArrayList;
 import java.util.stream.IntStream;
@@ -32,6 +35,7 @@ class ElectricityControllerTest extends AbstractRestDocsTest {
     @MockBean
     private ElectricityService electricityService;
     private final String uri = "/api/electricity/";
+
     @Test
         //@WithMockUser // 스프링 시큐리티 회피
     void getElectricityEach() throws Exception {
@@ -75,6 +79,56 @@ class ElectricityControllerTest extends AbstractRestDocsTest {
                 ));
 
         then(electricityService).should(times(1)).getEachAll(1L);
+    }
+
+    @Test
+    @DisplayName("계절별 전기 사용량 받아오기")
+    public void findElectricityBySeason() throws Exception {
+        //given
+        int[] usages = IntStream.rangeClosed(1, 12).toArray();
+        ArrayList<SeasonResponse> list = new ArrayList<>();
+
+        SeasonResponse response1 = new SeasonResponse(2018);
+        System.arraycopy(usages, 0, response1.getUsages(), 0, 4);
+
+        SeasonResponse response2 = new SeasonResponse(2019);
+        System.arraycopy(usages, 0, response2.getUsages(), 0, 4);
+        response2.getUsages()[3] = 16;
+
+        list.add(response1);
+        list.add(response2);
+
+        UsageResult<SeasonResponse> result = new UsageResult<>(list);
+        System.out.println("result = " + result);
+        given(electricityService.getSeasonData())
+                .willReturn(result);
+
+        //when
+        ResultActions perform = this.mockMvc.perform(get("/api/electricity/season"));
+
+        //then
+        perform.andExpect(status().isOk())
+                .andExpect(jsonPath("$.result[0].startYear").value(2018))
+                .andExpect(jsonPath("$.result[0].endYear").value(2019))
+                .andExpect(jsonPath("$.result[0].usages[0]").value(1))
+                .andExpect(jsonPath("$.result[0].usages[1]").value(2))
+                .andExpect(jsonPath("$.result[0].usages[2]").value(3))
+                .andExpect(jsonPath("$.result[0].usages[3]").value(4))
+                .andExpect(jsonPath("$.result[1].usages[3]").value(16));
+
+        //docs
+        perform.andDo(print())
+        .andDo(document("{class-name}/{method-name}",
+                        preprocessRequest(prettyPrint()),
+                        preprocessResponse(prettyPrint()),
+                        responseFields(
+                                fieldWithPath("result").description("결과 반환"),
+                                fieldWithPath("result[].startYear").description("해당 기간의 시작 년도"),
+                                fieldWithPath("result[].endYear").description("해당 기간의 끝 년도"),
+                                fieldWithPath("result[].usages").description("해당 기간의 계절별 학교 전기 사용량 집합(3월- 다음해2월)")
+                        )
+                ));
+                                
     }
 
     @Test

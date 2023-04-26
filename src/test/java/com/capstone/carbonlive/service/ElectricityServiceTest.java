@@ -1,5 +1,6 @@
 package com.capstone.carbonlive.service;
 
+import com.capstone.carbonlive.dto.SeasonResponse;
 import com.capstone.carbonlive.dto.UsageResponse;
 import com.capstone.carbonlive.dto.UsageResult;
 import com.capstone.carbonlive.dto.UsageWithNameResponse;
@@ -79,6 +80,35 @@ class ElectricityServiceTest {
                 assertThat(curUsages[j]).isEqualTo(expectUsages[i][j]);
             }
         }
+    }
+
+    @Test
+    @DisplayName("계절별 전기 사용량 출력")
+    public void getSeasonData() throws Exception {
+        //when
+        UsageResult<SeasonResponse> result = electricityService.getSeasonData();
+
+        //then
+        System.out.println("result = " + result);
+        assertThat(result.getResult().get(0).getUsages()[1]).isEqualTo(21);
+        assertThat(result.getResult().get(0).getUsages()[3]).isEqualTo(0);
+        assertThat(result.getResult().get(1).getUsages()[0]).isEqualTo(12);
+        assertThat(result.getResult().get(0).getUsages()[2]).isEqualTo(0);
+    }
+
+    @Test
+    void getAll(){
+        // when
+        UsageResult<UsageWithNameResponse> usageResult = electricityService.getAll();
+        List<UsageWithNameResponse> result = usageResult.getResult();
+
+        System.out.println("result = " + result);
+        //then
+        assertThat(result.size()).isEqualTo(2);
+        assertThat(result.get(0).getName()).isEqualTo(this.name[0]);
+        assertThat(result.get(1).getName()).isEqualTo(this.name[1]);
+
+        IntStream.rangeClosed(0, 11).forEach(i -> assertThat(result.get(1).getUsagesList().get(0).getUsages()[i]).isEqualTo(expectUsages[0][i]));
 
     }
 

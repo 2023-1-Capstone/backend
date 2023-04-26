@@ -61,7 +61,7 @@ class GasControllerTest extends AbstractRestDocsTest {
                     .build());
             gasRepository.save(Gas.builder().
                     recordedAt(LocalDate.of(2021, i, 01))
-                    .usages(i)
+                    .usages(2 * i)
                     .building(building)
                     .build());
         }
@@ -76,8 +76,8 @@ class GasControllerTest extends AbstractRestDocsTest {
         //then
         result.andExpect(status().isOk())
                 .andExpect(jsonPath("$.result[0].year").value(2021))
-                .andExpect(jsonPath("$.result[0].usages[0]").value(1))
-                .andExpect(jsonPath("$.result[0].usages[11]").value(12))
+                .andExpect(jsonPath("$.result[0].usages[0]").value(2))
+                .andExpect(jsonPath("$.result[0].usages[11]").value(24))
                 .andExpect(jsonPath("$.result[1].year").value(2022))
                 .andExpect(jsonPath("$.result[1].usages[0]").value(1))
                 .andExpect(jsonPath("$.result[1].usages[11]").value(12));
@@ -96,4 +96,33 @@ class GasControllerTest extends AbstractRestDocsTest {
                 ));
     }
 
+    @Test
+    @DisplayName("계절별 가스 사용량 받아오기")
+    public void findGasBySeason() throws Exception {
+        //when
+        ResultActions result = this.mockMvc.perform(get("/api/gas/season"));
+
+        //then
+        result.andExpect(status().isOk())
+                .andExpect(jsonPath("$.result[0].startYear").value(2021))
+                .andExpect(jsonPath("$.result[0].endYear").value(2022))
+                .andExpect(jsonPath("$.result[0].usages[0]").value(24))
+                .andExpect(jsonPath("$.result[0].usages[1]").value(42))
+                .andExpect(jsonPath("$.result[0].usages[2]").value(60))
+                .andExpect(jsonPath("$.result[0].usages[3]").value(27))
+                .andExpect(jsonPath("$.result[1].usages[3]").value(0));
+
+        //docs
+        result.andDo(print())
+                .andDo(document("{class-name}/{method-name}",
+                        preprocessRequest(prettyPrint()),
+                        preprocessResponse(prettyPrint()),
+                        responseFields(
+                                fieldWithPath("result").description("결과 반환"),
+                                fieldWithPath("result[].startYear").description("해당 기간의 시작 년도"),
+                                fieldWithPath("result[].endYear").description("해당 기간의 끝 년도"),
+                                fieldWithPath("result[].usages").description("해당 기간의 계절별 학교 가스 사용량 집합(3월- 다음해2월)")
+                        )
+                ));
+    }
 }

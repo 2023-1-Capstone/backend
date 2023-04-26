@@ -45,4 +45,15 @@ public class GasService {
 
         return getSeasonUsageResult(gasList);
     }
+
+//    /**
+//     * 계절별 가스 사용량
+//     */
+//    public UsageResult<SeasonResponse> findSeasonData() {
+//        List<Gas> gasList = gasRepository.findAll(Sort.by("recordedAt").ascending());
+//
+//        //getUsageResult
+//
+//        return null;
+//    }
 }

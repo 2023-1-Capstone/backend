@@ -55,6 +55,7 @@ public class GetUsageResult {
                 yearList.add(curYear);
         }
 
+
         int[] count = {0, 0, 0, 0};
         for (Integer year : yearList) {
             insertSeasonResponse(ascDataList, result, count, year);

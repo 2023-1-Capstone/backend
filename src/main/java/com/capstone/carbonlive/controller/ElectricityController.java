@@ -3,13 +3,12 @@ package com.capstone.carbonlive.controller;
 import com.capstone.carbonlive.dto.SeasonResponse;
 import com.capstone.carbonlive.dto.UsageResponse;
 import com.capstone.carbonlive.dto.UsageResult;
+import com.capstone.carbonlive.dto.UsageWithNameResponse;
 import com.capstone.carbonlive.service.ElectricityService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/electricity")
@@ -27,7 +26,13 @@ public class ElectricityController {
     @GetMapping("/season")
     public ResponseEntity<UsageResult<SeasonResponse>> getElectricityBySeason() {
         UsageResult<SeasonResponse> seasonResult = electricityService.getSeasonData();
-
         return ResponseEntity.ok(seasonResult);
+    }
+
+    @GetMapping("/area")
+    @ResponseStatus(HttpStatus.OK)
+    public UsageResult<UsageWithNameResponse> getElectricityAll(){
+        UsageResult<UsageWithNameResponse> result = electricityService.getAll();
+        return result;
     }
 }

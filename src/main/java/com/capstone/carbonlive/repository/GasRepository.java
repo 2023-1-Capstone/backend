@@ -9,5 +9,4 @@ import java.util.List;
 
 public interface GasRepository extends JpaRepository<Gas, Long> {
     List<Gas> findByBuildingOrderByRecordedAtAsc(Building building);
-    List<Gas> findAll(Sort sort);
 }

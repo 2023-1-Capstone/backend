@@ -26,6 +26,7 @@ public class ElectricityController {
     @GetMapping("/season")
     public ResponseEntity<UsageResult<SeasonResponse>> getElectricityBySeason() {
         UsageResult<SeasonResponse> seasonResult = electricityService.getSeasonData();
+
         return ResponseEntity.ok(seasonResult);
     }
 

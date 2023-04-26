@@ -1,5 +1,6 @@
 package com.capstone.carbonlive.controller;
 
+import com.capstone.carbonlive.dto.SeasonResponse;
 import com.capstone.carbonlive.dto.UsageResponse;
 import com.capstone.carbonlive.dto.UsageResult;
 import com.capstone.carbonlive.dto.UsageWithNameResponse;
@@ -13,11 +14,19 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/electricity")
 @RequiredArgsConstructor
 public class ElectricityController {
+
     private final ElectricityService electricityService;
+
     @GetMapping("/{buildingCode}")
     public ResponseEntity<UsageResult<UsageResponse>> getElectricityEach(@PathVariable(name = "buildingCode") Long id){
         UsageResult<UsageResponse> usageResult = electricityService.getEachAll(id);
         return ResponseEntity.ok(usageResult);
+    }
+
+    @GetMapping("/season")
+    public ResponseEntity<UsageResult<SeasonResponse>> getElectricityBySeason() {
+        UsageResult<SeasonResponse> seasonResult = electricityService.getSeasonData();
+        return ResponseEntity.ok(seasonResult);
     }
 
     @GetMapping("/area")

@@ -1,5 +1,6 @@
 package com.capstone.carbonlive.controller;
 
+import com.capstone.carbonlive.dto.SeasonResponse;
 import com.capstone.carbonlive.dto.UsageResponse;
 import com.capstone.carbonlive.dto.UsageResult;
 import com.capstone.carbonlive.service.GasService;
@@ -13,16 +14,22 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api")
+@RequestMapping("/api/gas")
 public class GasController {
 
     private final GasService gasService;
 
-    @GetMapping("/gas/{buildingCode}")
+    @GetMapping("/{buildingCode}")
     public ResponseEntity<UsageResult<UsageResponse>> findGasByBuilding(@PathVariable("buildingCode") Long buildingCode) {
-        UsageResult<UsageResponse> result = gasService.findByBuilding(buildingCode);
+        UsageResult<UsageResponse> usageResult = gasService.findByBuilding(buildingCode);
 
-        return ResponseEntity.ok(result);
+        return ResponseEntity.ok(usageResult);
     }
 
+    @GetMapping("/season")
+    public ResponseEntity<UsageResult<SeasonResponse>> findGasBySeason() {
+        UsageResult<SeasonResponse> seasonResult = gasService.findBySeason();
+
+        return ResponseEntity.ok(seasonResult);
+    }
 }

@@ -1,5 +1,6 @@
 package com.capstone.carbonlive.service;
 
+import com.capstone.carbonlive.dto.SeasonResponse;
 import com.capstone.carbonlive.dto.UsageResponse;
 import com.capstone.carbonlive.dto.UsageResult;
 import com.capstone.carbonlive.entity.Building;
@@ -37,33 +38,42 @@ class GasServiceTest {
                 .build();
         buildingRepository.save(building);
 
-        gasRepository.save(Gas.builder()
-                .recordedAt(LocalDate.of(2022, 2, 1))
-                .usages(111)
-                .building(building)
-                .build());
-        gasRepository.save(Gas.builder()
-                .recordedAt(LocalDate.of(2022, 12, 1))
-                .usages(222)
-                .building(building)
-                .build());
-        gasRepository.save(Gas.builder()
-                .recordedAt(LocalDate.of(2022, 7, 1))
-                .usages(333)
-                .building(building)
-                .build());
+        for (int i = 1; i < 13; i++) {
+            gasRepository.save(Gas.builder().
+                    recordedAt(LocalDate.of(2022, i, 01))
+                    .usages(i)
+                    .building(building)
+                    .build());
+            gasRepository.save(Gas.builder().
+                    recordedAt(LocalDate.of(2021, i, 01))
+                    .usages(2 * i)
+                    .building(building)
+                    .build());
+        }
     }
 
     @Test
     @DisplayName("건물별 가스 정보 출력")
     public void findByBuilding() throws Exception {
-        //given, when
+        //when
         Building findBuilding = buildingRepository.findByName("building1");
         UsageResult<UsageResponse> result = gasService.findByBuilding(findBuilding.getId());
 
         //then
         System.out.println("result = " + result);
-        assertThat(result.getResult().get(0).getYear()).isEqualTo(2022);
+        assertThat(result.getResult().get(0).getYear()).isEqualTo(2021);
         assertThat(result.getResult().get(0).getUsages().length).isEqualTo(12);
+    }
+
+    @Test
+    @DisplayName("계절별 가스 사용량 출력")
+    public void findBySeason() throws Exception {
+        //when
+        UsageResult<SeasonResponse> result = gasService.findBySeason();
+
+        //then
+        System.out.println("result = " + result);
+        assertThat(result.getResult().get(0).getUsages()[0]).isEqualTo(24);
+        assertThat(result.getResult().get(1).getUsages()[3]).isEqualTo(0);
     }
 }

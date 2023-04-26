@@ -14,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+import static com.capstone.carbonlive.service.common.GetUsageResult.*;
 import static com.capstone.carbonlive.service.common.GetUsageResult.getBuildingUsageResult;
 
 @Service
@@ -34,6 +35,15 @@ public class GasService {
         List<Gas> gasList = gasRepository.findByBuildingOrderByRecordedAtAsc(building);
 
         return getBuildingUsageResult(gasList);
+    }
+
+    /**
+     * 계절별 가스 사용량
+     */
+    public UsageResult<SeasonResponse> findBySeason() {
+        List<Gas> gasList = gasRepository.findAll(Sort.by("recordedAt").ascending());
+
+        return getSeasonUsageResult(gasList);
     }
 
 //    /**

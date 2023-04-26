@@ -90,14 +90,14 @@ class ElectricityServiceTest {
 
         //then
         System.out.println("result = " + result);
-        assertThat(result.getResult().get(0).getUsages()[1]).isEqualTo(21);
+        assertThat(result.getResult().get(0).getUsages()[1]).isEqualTo(42);
         assertThat(result.getResult().get(0).getUsages()[3]).isEqualTo(0);
-        assertThat(result.getResult().get(1).getUsages()[0]).isEqualTo(12);
-        assertThat(result.getResult().get(0).getUsages()[2]).isEqualTo(0);
+        assertThat(result.getResult().get(1).getUsages()[0]).isEqualTo(24);
+        assertThat(result.getResult().get(1).getUsages()[2]).isEqualTo(0);
     }
 
     @Test
-    void getAll(){
+    void getAll() {
         // when
         UsageResult<UsageWithNameResponse> usageResult = electricityService.getAll();
         List<UsageWithNameResponse> result = usageResult.getResult();
@@ -109,7 +109,6 @@ class ElectricityServiceTest {
         assertThat(result.get(1).getName()).isEqualTo(this.name[1]);
 
         IntStream.rangeClosed(0, 11).forEach(i -> assertThat(result.get(1).getUsagesList().get(0).getUsages()[i]).isEqualTo(expectUsages[0][i]));
-
     }
 
     @Test

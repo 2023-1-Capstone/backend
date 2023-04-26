@@ -118,7 +118,7 @@ class ElectricityControllerTest extends AbstractRestDocsTest {
 
         //docs
         perform.andDo(print())
-        .andDo(document("{class-name}/{method-name}",
+                .andDo(document("{class-name}/{method-name}",
                         preprocessRequest(prettyPrint()),
                         preprocessResponse(prettyPrint()),
                         responseFields(
@@ -128,7 +128,6 @@ class ElectricityControllerTest extends AbstractRestDocsTest {
                                 fieldWithPath("result[].usages").description("해당 기간의 계절별 학교 전기 사용량 집합(3월- 다음해2월)")
                         )
                 ));
-                                
     }
 
     @Test

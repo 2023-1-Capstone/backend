@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-import static com.capstone.carbonlive.service.common.GetUsageResult.getUsageResult;
+import static com.capstone.carbonlive.service.common.GetUsageResult.getBuildingUsageResult;
 
 @Service
 @RequiredArgsConstructor
@@ -20,6 +20,6 @@ public class WaterServiceImpl implements WaterService{
     @Override
     public UsageResult<UsageResponse> getAll() {
         List<Water> waterList = waterRepository.findAll(Sort.by("recordedAt").ascending());
-        return getUsageResult(waterList);
+        return getBuildingUsageResult(waterList);
     }
 }

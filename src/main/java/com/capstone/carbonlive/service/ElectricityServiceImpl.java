@@ -13,7 +13,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-import static com.capstone.carbonlive.service.common.GetUsageResult.getUsageResult;
+import static com.capstone.carbonlive.service.common.GetUsageResult.getBuildingUsageResult;
 
 @Service
 @RequiredArgsConstructor
@@ -28,6 +28,6 @@ public class ElectricityServiceImpl implements ElectricityService {
         List<Electricity> electricityList = electricityRepository.findAllByBuilding(building,
                 Sort.by("recordedAt").ascending());
 
-        return getUsageResult(electricityList);
+        return getBuildingUsageResult(electricityList);
     }
 }

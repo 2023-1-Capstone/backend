@@ -7,10 +7,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,27 +27,34 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 @SpringBootTest
 @Transactional
-@AutoConfigureRestDocs
 class BuildingControllerTest extends AbstractRestDocsTest {
 
     @Autowired BuildingRepository buildingRepository;
 
+    private Long buildingId1;
+    private Long buildingId2;
+
     @BeforeEach
     void beforeEach() {
-        buildingRepository.save(Building.builder()
+        Building building = Building.builder()
                 .name("building1")
                 .gasArea(new BigDecimal(1111.11))
                 .elecArea(new BigDecimal(2222.22))
                 .gasDescription("gas1")
                 .elecDescription("electricity1")
-                .build());
-        buildingRepository.save(Building.builder()
+                .build();
+        buildingRepository.save(building);
+        buildingId1 = building.getId();
+
+        Building building2 = Building.builder()
                 .name("building2")
                 .gasArea(new BigDecimal(3333.33))
                 .elecArea(new BigDecimal(4444.44))
                 .gasDescription("gas2")
                 .elecDescription("electricity2")
-                .build());
+                .build();
+        buildingRepository.save(building2);
+        buildingId2 = building2.getId();
     }
 
     @Test
@@ -60,13 +65,13 @@ class BuildingControllerTest extends AbstractRestDocsTest {
 
         //then
         result.andExpect(status().isOk())
-                .andExpect(jsonPath("$.result[0].id").value(1L))
+                .andExpect(jsonPath("$.result[0].id").value(buildingId1))
                 .andExpect(jsonPath("$.result[0].name").value("building1"))
                 .andExpect(jsonPath("$.result[0].gasArea").value(1111.11))
                 .andExpect(jsonPath("$.result[0].elecArea").value(2222.22))
                 .andExpect(jsonPath("$.result[0].gasDescription").value("gas1"))
                 .andExpect(jsonPath("$.result[0].elecDescription").value("electricity1"))
-                .andExpect(jsonPath("$.result[1].id").value(2L))
+                .andExpect(jsonPath("$.result[1].id").value(buildingId2))
                 .andExpect(jsonPath("$.result[1].name").value("building2"))
                 .andExpect(jsonPath("$.result[1].gasArea").value(3333.33))
                 .andExpect(jsonPath("$.result[1].elecArea").value(4444.44))

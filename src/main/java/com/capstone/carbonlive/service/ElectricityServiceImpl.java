@@ -63,20 +63,4 @@ public class ElectricityServiceImpl implements ElectricityService {
 
         return result;
     }
-
-    @Override
-    public UsageResult<UsageWithNameResponse> getAll() {
-        UsageResult<UsageWithNameResponse> result = new UsageResult<>(new ArrayList<>());
-
-        List<Building> buildings = buildingRepository.findAll();
-        for (Building b : buildings){
-            UsageWithNameResponse response = new UsageWithNameResponse();
-            response.setName(b.getName());
-            UsageResult<UsageResponse> usageResult = getEachAll(b.getId());
-            response.setUsagesList(usageResult.getResult());
-            result.add(response);
-        }
-
-        return result;
-    }
 }

@@ -110,20 +110,4 @@ class ElectricityServiceTest {
 
         IntStream.rangeClosed(0, 11).forEach(i -> assertThat(result.get(1).getUsagesList().get(0).getUsages()[i]).isEqualTo(expectUsages[0][i]));
     }
-
-    @Test
-    void getAll(){
-        // when
-        UsageResult<UsageWithNameResponse> usageResult = electricityService.getAll();
-        List<UsageWithNameResponse> result = usageResult.getResult();
-
-        System.out.println("result = " + result);
-        //then
-        assertThat(result.size()).isEqualTo(2);
-        assertThat(result.get(0).getName()).isEqualTo(this.name[0]);
-        assertThat(result.get(1).getName()).isEqualTo(this.name[1]);
-
-        IntStream.rangeClosed(0, 11).forEach(i -> assertThat(result.get(1).getUsagesList().get(0).getUsages()[i]).isEqualTo(expectUsages[0][i]));
-
-    }
 }

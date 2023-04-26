@@ -3,6 +3,7 @@ package com.capstone.carbonlive.service;
 import com.capstone.carbonlive.dto.SeasonResponse;
 import com.capstone.carbonlive.dto.UsageResponse;
 import com.capstone.carbonlive.dto.UsageResult;
+import com.capstone.carbonlive.dto.UsageWithNameResponse;
 import com.capstone.carbonlive.entity.Building;
 import com.capstone.carbonlive.entity.Gas;
 import com.capstone.carbonlive.repository.BuildingRepository;
@@ -16,6 +17,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.List;
+import java.util.stream.IntStream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -75,5 +78,25 @@ class GasServiceTest {
         System.out.println("result = " + result);
         assertThat(result.getResult().get(0).getUsages()[0]).isEqualTo(24);
         assertThat(result.getResult().get(1).getUsages()[3]).isEqualTo(0);
+    }
+
+    @Test
+    @DisplayName("전체 가스 사용량 출력")
+    public void findAll(){
+        // when
+        UsageResult<UsageWithNameResponse> usageResult = gasService.findAll();
+        List<UsageWithNameResponse> result = usageResult.getResult();
+
+        System.out.println("result = " + result);
+        // then
+        assertThat(result.get(0).getName()).isEqualTo("building1");
+
+        IntStream.range(0, 2).forEach(i -> {
+            assertThat(result.get(0).getUsagesList().get(i).getYear()).isEqualTo(2021 + i);
+
+            IntStream.range(0, 12).forEach(j ->
+                assertThat(result.get(0).getUsagesList().get(i).getUsages()[j]).isEqualTo((j + 1) * (2 - i))
+            );
+        });
     }
 }

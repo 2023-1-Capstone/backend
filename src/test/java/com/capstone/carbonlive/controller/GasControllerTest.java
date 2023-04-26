@@ -11,17 +11,16 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
-import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.*;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.*;
-import static org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
@@ -122,6 +121,35 @@ class GasControllerTest extends AbstractRestDocsTest {
                                 fieldWithPath("result[].startYear").description("해당 기간의 시작 년도"),
                                 fieldWithPath("result[].endYear").description("해당 기간의 끝 년도"),
                                 fieldWithPath("result[].usages").description("해당 기간의 계절별 학교 가스 사용량 집합(3월- 다음해2월)")
+                        )
+                ));
+    }
+
+    @Test
+    public void findGasAll() throws Exception {
+        ResultActions resultActions = this.mockMvc.perform(get("/api/gas/area")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.result[0].name").value("building1"))
+                .andExpect(jsonPath("$.result[0].usagesList[0].year").value(2021))
+                .andExpect(jsonPath("$.result[0].usagesList[1].year").value(2022));
+
+        for (int i = 0; i < 12; i++) {
+            resultActions.andExpect(
+                    jsonPath("$.result[0].usagesList[1].usages[" + i + "]").value(i + 1)
+            );
+        }
+
+        resultActions.andDo(print())
+                .andDo(document("{class-name}/{method-name}",
+                        preprocessRequest(prettyPrint()),
+                        preprocessResponse(prettyPrint()),
+                        responseFields(
+                                fieldWithPath("result").description("결과 반환"),
+                                fieldWithPath("result[].name").description("건물명"),
+                                fieldWithPath("result[].usagesList").description("사용량 데이터"),
+                                fieldWithPath("result[].usagesList[].year").description("해당 사용량 데이터의 년도"),
+                                fieldWithPath("result[].usagesList[].usages").description("월별 사용량(1월-12월)")
                         )
                 ));
     }

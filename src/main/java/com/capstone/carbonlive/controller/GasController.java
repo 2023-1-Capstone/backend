@@ -3,6 +3,7 @@ package com.capstone.carbonlive.controller;
 import com.capstone.carbonlive.dto.SeasonResponse;
 import com.capstone.carbonlive.dto.UsageResponse;
 import com.capstone.carbonlive.dto.UsageResult;
+import com.capstone.carbonlive.dto.UsageWithNameResponse;
 import com.capstone.carbonlive.service.GasService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -31,5 +32,12 @@ public class GasController {
         UsageResult<SeasonResponse> seasonResult = gasService.findBySeason();
 
         return ResponseEntity.ok(seasonResult);
+    }
+
+    @GetMapping("/area")
+    public ResponseEntity<UsageResult<UsageWithNameResponse>> findGasAll(){
+        UsageResult<UsageWithNameResponse> result = gasService.findAll();
+
+        return ResponseEntity.ok(result);
     }
 }

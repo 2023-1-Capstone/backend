@@ -17,3 +17,7 @@ include::{snippets}/electricity-controller-test/get-electricity-each/response-fi
 .response
 include::{snippets}/water-controller-test/get-water/http-response.adoc[]
 include::{snippets}/water-controller-test/get-water/response-fields.adoc[]
+
+include::{snippets}/gas-controller-test/find-gas-by-season/http-request.adoc[]
+include::{snippets}/gas-controller-test/find-gas-by-season/http-response.adoc[]
+include::{snippets}/gas-controller-test/find-gas-by-season/response-fields.adoc[]

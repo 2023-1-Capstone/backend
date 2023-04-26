@@ -1,5 +1,6 @@
 package com.capstone.carbonlive.service;
 
+import com.capstone.carbonlive.dto.SeasonResponse;
 import com.capstone.carbonlive.dto.UsageResponse;
 import com.capstone.carbonlive.dto.UsageResult;
 import com.capstone.carbonlive.entity.Building;
@@ -73,6 +74,19 @@ class ElectricityServiceTest {
                 assertThat(curUsages[j]).isEqualTo(expectUsages[i][j]);
             }
         }
+    }
 
+    @Test
+    @DisplayName("계절별 전기 사용량 출력")
+    public void getSeasonData() throws Exception {
+        //when
+        UsageResult<SeasonResponse> result = electricityService.getSeasonData();
+
+        //then
+        System.out.println("result = " + result);
+        assertThat(result.getResult().get(0).getUsages()[1]).isEqualTo(21);
+        assertThat(result.getResult().get(0).getUsages()[3]).isEqualTo(0);
+        assertThat(result.getResult().get(1).getUsages()[0]).isEqualTo(12);
+        assertThat(result.getResult().get(0).getUsages()[2]).isEqualTo(0);
     }
 }

@@ -1,12 +1,14 @@
 package com.capstone.carbonlive.service;
 
 import com.capstone.carbonlive.dto.CarbonYearResponse;
+import com.capstone.carbonlive.dto.UsageResponse;
 import com.capstone.carbonlive.dto.UsageResult;
 import com.capstone.carbonlive.entity.Building;
 import com.capstone.carbonlive.entity.Carbon;
 import com.capstone.carbonlive.repository.BuildingRepository;
 import com.capstone.carbonlive.repository.CarbonRepository;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -69,5 +71,23 @@ class CarbonServiceTest {
         assertThat(yearUsages.get(0).getUsages()).isEqualTo(27);
         assertThat(yearUsages.get(1).getYear()).isEqualTo(2019);
         assertThat(yearUsages.get(1).getUsages()).isEqualTo(333);
+    }
+
+    @Test
+    @DisplayName("건물별 탄소 배출량")
+   public void getBuildingUsages() throws Exception {
+        //when
+        Building findBuilding = buildingRepository.findByName("본관");
+        UsageResult<UsageResponse> result = carbonService.getBuildingUsages(findBuilding.getId());
+        List<UsageResponse> buildingUsages = result.getResult();
+
+        //then
+        System.out.println("buildingUsages = " + buildingUsages);
+        assertThat(buildingUsages.get(0).getYear()).isEqualTo(2017);
+        assertThat(buildingUsages.get(0).getUsages()[0]).isEqualTo(0);
+        assertThat(buildingUsages.get(0).getUsages()[6]).isEqualTo(27);
+        assertThat(buildingUsages.get(1).getYear()).isEqualTo(2019);
+        assertThat(buildingUsages.get(1).getUsages()[0]).isEqualTo(0);
+        assertThat(buildingUsages.get(1).getUsages()[6]).isEqualTo(57);
     }
 }

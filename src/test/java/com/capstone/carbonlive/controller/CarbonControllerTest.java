@@ -1,15 +1,19 @@
 package com.capstone.carbonlive.controller;
 
 import com.capstone.carbonlive.dto.CarbonYearResponse;
+import com.capstone.carbonlive.dto.UsageResponse;
 import com.capstone.carbonlive.dto.UsageResult;
 import com.capstone.carbonlive.restdocs.AbstractRestDocsTest;
 import com.capstone.carbonlive.service.CarbonService;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.MediaType;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.IntStream;
 
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
@@ -19,14 +23,19 @@ import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuild
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.*;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
+import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
+import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(CarbonController.class)
 class CarbonControllerTest extends AbstractRestDocsTest {
+
     @MockBean
     private CarbonService carbonService;
-    private final String uri = "/api/carbon";
+    private final String uri = "/api/carbon/";
+
     @Test
     void getYearUsages() throws Exception {
         List<CarbonYearResponse> responseList = new ArrayList<>();
@@ -38,7 +47,7 @@ class CarbonControllerTest extends AbstractRestDocsTest {
         given(carbonService.getYearsUsages())
                 .willReturn(result);
 
-        this.mockMvc.perform(get(uri + "/year"))
+        this.mockMvc.perform(get(uri + "year"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.result[0].year").value(2019))
                 .andExpect(jsonPath("$.result[0].usages").value(20190))
@@ -55,5 +64,50 @@ class CarbonControllerTest extends AbstractRestDocsTest {
                 );
 
         then(carbonService).should(times(1)).getYearsUsages();
+    }
+
+    @Test
+    @DisplayName("건물별 탄소 배출량")
+    public void getBuildingUsages() throws Exception {
+        int[] usages = IntStream.rangeClosed(1, 12).toArray();
+        ArrayList<UsageResponse> list = new ArrayList<>();
+
+        UsageResponse response1 = new UsageResponse();
+        response1.setYear(2018);
+        System.arraycopy(usages, 0, response1.getUsages(), 0, 12);
+
+        UsageResponse response2 = new UsageResponse();
+        response2.setYear(2019);
+        System.arraycopy(usages, 0, response2.getUsages(), 0, 12);
+        response2.getUsages()[11] = 16;
+
+        list.add(response1);
+        list.add(response2);
+
+        UsageResult<UsageResponse> result = new UsageResult<>(list);
+        System.out.println("result = " + result);
+        given(carbonService.getBuildingUsages(1L))
+                .willReturn(result);
+
+        mockMvc.perform(get(uri + "{buildingCode}", 1L))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.result[0].year").value(2018))
+                .andExpect(jsonPath("$.result[0].usages[11]").value(12))
+                .andExpect(jsonPath("$.result[1].year").value(2019))
+                .andExpect(jsonPath("$.result[1].usages[11]").value(16))
+                .andDo(print())
+                .andDo(document("{class-name}/{method-name}",
+                        preprocessRequest(prettyPrint()),
+                        preprocessResponse(prettyPrint()),
+                        pathParameters(parameterWithName("buildingCode").description("건물 코드 (id)")),
+                        responseFields(
+                                fieldWithPath("result").description("결과 반환"),
+                                fieldWithPath("result[].year").description("년도"),
+                                fieldWithPath("result[].usages").description("해당 년도에 따른 월별 사용량 집합(1월-12월)")
+                        )
+                ));
+
+        then(carbonService).should(times(1)).getBuildingUsages(1L);
+
     }
 }

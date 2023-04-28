@@ -1,9 +1,13 @@
 package com.capstone.carbonlive.service;
 
 import com.capstone.carbonlive.dto.CarbonYearResponse;
+import com.capstone.carbonlive.dto.UsageResponse;
 import com.capstone.carbonlive.dto.UsageResult;
+import com.capstone.carbonlive.entity.Building;
 import com.capstone.carbonlive.entity.Carbon;
+import com.capstone.carbonlive.repository.BuildingRepository;
 import com.capstone.carbonlive.repository.CarbonRepository;
+import com.capstone.carbonlive.service.common.GetUsageResult;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -11,10 +15,13 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.capstone.carbonlive.service.common.GetUsageResult.*;
+
 @Service
 @RequiredArgsConstructor
 public class CarbonServiceImpl implements CarbonService{
     private final CarbonRepository carbonRepository;
+    private final BuildingRepository buildingRepository;
 
     @Override
     public UsageResult<CarbonYearResponse> getYearsUsages() {
@@ -39,5 +46,14 @@ public class CarbonServiceImpl implements CarbonService{
         result.getResult().remove(0); // 최초 year = -1 인 부분 삭제.
 
         return result;
+    }
+
+    @Override
+    public UsageResult<UsageResponse> getBuildingUsages(Long buildingId) {
+        Building building = buildingRepository.findById(buildingId).orElseThrow(RuntimeException::new);
+
+        List<Carbon> carbonList = carbonRepository.findByBuildingOrderByRecordedAtAsc(building);
+
+        return getBuildingUsageResult(carbonList);
     }
 }

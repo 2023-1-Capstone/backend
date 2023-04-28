@@ -1,14 +1,13 @@
 package com.capstone.carbonlive.controller;
 
 import com.capstone.carbonlive.dto.CarbonYearResponse;
+import com.capstone.carbonlive.dto.UsageResponse;
 import com.capstone.carbonlive.dto.UsageResult;
 import com.capstone.carbonlive.service.CarbonService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/carbon")
@@ -20,5 +19,10 @@ public class CarbonController {
     @ResponseStatus(HttpStatus.OK)
     public UsageResult<CarbonYearResponse> getYearUsages(){
         return carbonService.getYearsUsages();
+    }
+
+    @GetMapping("/{buildingCode}")
+    public ResponseEntity<UsageResult<UsageResponse>> getBuildingUsages(@PathVariable("buildingCode") Long buildingCode ) {
+        return ResponseEntity.ok(carbonService.getBuildingUsages(buildingCode));
     }
 }

@@ -5,7 +5,6 @@ import jakarta.persistence.MappedSuperclass;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 
 import java.time.LocalDate;
@@ -21,4 +20,7 @@ public abstract class BaseEntity {
 
     @Column(nullable = false)
     protected int usages;
+
+    @Column(nullable = false)
+    protected boolean prediction;
 }

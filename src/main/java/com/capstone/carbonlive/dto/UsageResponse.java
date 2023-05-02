@@ -5,7 +5,7 @@ import lombok.Data;
 @Data
 public class UsageResponse {
     private int year;
-    private int[] usages = new int[12];
+    private UsagePredictionResponse[] usages = new UsagePredictionResponse[12];
 
     public UsageResponse() {
     }

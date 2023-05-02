@@ -17,8 +17,9 @@ public class Water extends BaseEntity{
     private Long id;
 
     @Builder(toBuilder = true)
-    public Water(LocalDate recordedAt, int usages){
+    public Water(LocalDate recordedAt, int usages, boolean prediction){
         this.recordedAt = recordedAt;
         this.usages = usages;
+        this.prediction = prediction;
     }
 }

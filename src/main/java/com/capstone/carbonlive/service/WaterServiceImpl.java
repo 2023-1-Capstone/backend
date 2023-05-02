@@ -19,7 +19,8 @@ public class WaterServiceImpl implements WaterService{
 
     @Override
     public UsageResult<UsageResponse> getAll() {
-        List<Water> waterList = waterRepository.findAll(Sort.by("recordedAt").ascending());
+        List<Water> waterList = waterRepository.findAll(Sort.by("recordedAt").ascending()
+                .and(Sort.by("prediction").descending()));
         return getBuildingUsageResult(waterList);
     }
 }

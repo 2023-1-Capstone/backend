@@ -1,9 +1,6 @@
 package com.capstone.carbonlive.service;
 
-import com.capstone.carbonlive.dto.SeasonResponse;
-import com.capstone.carbonlive.dto.UsageResponse;
-import com.capstone.carbonlive.dto.UsageResult;
-import com.capstone.carbonlive.dto.UsageWithNameResponse;
+import com.capstone.carbonlive.dto.*;
 import com.capstone.carbonlive.entity.Building;
 import com.capstone.carbonlive.entity.Electricity;
 import com.capstone.carbonlive.repository.BuildingRepository;
@@ -36,6 +33,10 @@ class ElectricityServiceTest {
     private final String[] name = {"본관", "60주년기념관"};
     private final int[] expectYear = {2018, 2019};
     private final int[][] expectUsages = { {0, 0, 0, 0, 0, 6, 7, 8, 9, 10, 0, 0}, {0, 2, 3, 4, 5, 0, 0, 0, 0, 0, 0, 0} };
+    private final boolean[][] expectPrediction = {
+            {false, false, false, false, false, true, false, true, false, true, false, false},
+            {false, true, false, true, false, false, false, false, false, false, false, false}
+    };
 
     @BeforeEach
     void setUp(){
@@ -50,14 +51,24 @@ class ElectricityServiceTest {
             List<Electricity> tempList = new ArrayList<>();
             IntStream.rangeClosed(2, 10).forEach(i -> {
                 int year = i > 5 ? 2018 : 2019;
+                boolean sw = (i % 2 == 0);
                 Electricity e = Electricity.builder()
                         .recordedAt(LocalDate.of(year, i, 1))
                         .building(sampleBuilding)
                         .usages(i)
+                        .prediction(sw)
                         .build();
                 tempList.add(e);
             });
 
+            if (n.equals("본관")) {
+                tempList.add(Electricity.builder()
+                        .usages(1420)
+                        .recordedAt(LocalDate.of(2018, 7, 1))
+                        .prediction(true)
+                        .building(sampleBuilding)
+                        .build());
+            } // 이 데이터는 포함되면 안된다.
             electricityRepository.saveAll(tempList);
         }
     }
@@ -72,19 +83,20 @@ class ElectricityServiceTest {
         for (int i = 0; i < usageResult.getResult().size(); i++){
             UsageResponse curUsageResponse = usageResult.getResult().get(i);
             int curYear = curUsageResponse.getYear();
-            int[] curUsages = curUsageResponse.getUsages();
+            UsagePredictionResponse[] curUsages = curUsageResponse.getUsages();
 
             assertThat(curYear).isEqualTo(expectYear[i]);
 
             for (int j = 0; j < 12; j++){
-                assertThat(curUsages[j]).isEqualTo(expectUsages[i][j]);
+                assertThat(curUsages[j].getData()).isEqualTo(expectUsages[i][j]);
+                assertThat(curUsages[j].isPrediction()).isEqualTo(expectPrediction[i][j]);
             }
         }
     }
 
     @Test
     @DisplayName("계절별 전기 사용량 출력")
-    public void getSeasonData() throws Exception {
+    public void getSeasonData() {
         //when
         UsageResult<SeasonResponse> result = electricityService.getSeasonData();
 
@@ -108,6 +120,7 @@ class ElectricityServiceTest {
         assertThat(result.get(0).getName()).isEqualTo(this.name[0]);
         assertThat(result.get(1).getName()).isEqualTo(this.name[1]);
 
-        IntStream.rangeClosed(0, 11).forEach(i -> assertThat(result.get(1).getUsagesList().get(0).getUsages()[i]).isEqualTo(expectUsages[0][i]));
+        IntStream.rangeClosed(0, 11).forEach(i -> assertThat(result.get(1).getUsagesList().get(0).getUsages()[i].getData()).isEqualTo(expectUsages[0][i]));
+        IntStream.rangeClosed(0, 11).forEach(i -> assertThat(result.get(1).getUsagesList().get(0).getUsages()[i].isPrediction()).isEqualTo(expectPrediction[0][i]));
     }
 }

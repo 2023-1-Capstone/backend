@@ -1,21 +1,22 @@
 package com.capstone.carbonlive.service.common;
 
 import com.capstone.carbonlive.dto.SeasonResponse;
+import com.capstone.carbonlive.dto.UsagePredictionResponse;
 import com.capstone.carbonlive.dto.UsageResponse;
 import com.capstone.carbonlive.dto.UsageResult;
 import com.capstone.carbonlive.entity.BaseEntity;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.IntStream;
 
 public class GetUsageResult {
     public static <T extends BaseEntity> UsageResult<UsageResponse> getBuildingUsageResult(List<T> ascDataList) {
         UsageResult<UsageResponse> result = new UsageResult<>(new ArrayList<>());
 
         int year = -1;
-        int[] usages = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+        UsagePredictionResponse[] usages = new UsagePredictionResponse[12];
 
         for (T data : ascDataList){
             int curYear = data.getRecordedAt().getYear();
@@ -24,11 +25,16 @@ public class GetUsageResult {
                     insertUsageResponse(result, year, usages);
                 }
                 year = curYear;
-                Arrays.fill(usages, 0);
+                IntStream.range(0, 12).forEach(i ->
+                        usages[i] = UsagePredictionResponse.builder()
+                        .data(0)
+                        .prediction(false)
+                        .build());
             }
 
             int eMonth = data.getRecordedAt().getMonth().getValue() - 1;
-            usages[eMonth] = data.getUsages();
+            usages[eMonth].setData(data.getUsages());
+            usages[eMonth].setPrediction(data.isPrediction());
         }
         if (year > 0){
             insertUsageResponse(result, year, usages);
@@ -37,7 +43,7 @@ public class GetUsageResult {
         return result;
     }
 
-    private static void insertUsageResponse(UsageResult<UsageResponse> result, int year, int[] usages) {
+    private static void insertUsageResponse(UsageResult<UsageResponse> result, int year, UsagePredictionResponse[] usages) {
         UsageResponse usageResponse = new UsageResponse();
         usageResponse.setYear(year);
         for (int i = 0; i < usageResponse.getUsages().length; i++)

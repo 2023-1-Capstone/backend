@@ -29,12 +29,15 @@ class WaterServiceTest {
         IntStream.rangeClosed(1, 10).forEach(i -> {
             Water water = Water.builder()
                     .usages(i)
-                    .recordedAt(LocalDate.of(
-                                    i < 6 ? 2018 : 2019, i, 1
-                            )
-                    ).build();
+                    .recordedAt( LocalDate.of(i < 6 ? 2018 : 2019, i, 1) )
+                    .build();
             waterRepository.save(water);
         });
+        waterRepository.save(Water.builder()
+                .usages(453583)
+                .recordedAt(LocalDate.of(2019, 10, 1))
+                .prediction(true)
+                .build()); // 이 데이터가 반영되면 안된다.
     }
 
     @Test
@@ -49,7 +52,7 @@ class WaterServiceTest {
         for (int i = 0; i < 2; i++) {
             assertThat(ascResult.getResult().get(i).getYear()).isEqualTo(expectYear[i]);
             for (int j = 0; j < 12; j++){
-                assertThat(ascResult.getResult().get(i).getUsages()[j]).isEqualTo(expectUsages[i][j]);
+                assertThat(ascResult.getResult().get(i).getUsages()[j].getData()).isEqualTo(expectUsages[i][j]);
             }
         }
 

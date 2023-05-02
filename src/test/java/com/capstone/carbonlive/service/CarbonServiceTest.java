@@ -47,6 +47,7 @@ class CarbonServiceTest {
                     .building(sampleBuilding)
                     .usages(50 + i)
                     .recordedAt(LocalDate.of(2019, i, 1))
+                    .prediction(i == 5)
                     .build();
             carbonList.add(carbon);
         });
@@ -54,6 +55,7 @@ class CarbonServiceTest {
                 .usages(27)
                 .building(sampleBuilding)
                 .recordedAt(LocalDate.of(2017, 7, 1))
+                .prediction(false)
                 .build();
         carbonList.add(carbon);
 
@@ -75,7 +77,7 @@ class CarbonServiceTest {
 
     @Test
     @DisplayName("건물별 탄소 배출량")
-   public void getBuildingUsages() throws Exception {
+   public void getBuildingUsages() {
         //when
         Building findBuilding = buildingRepository.findByName("본관");
         UsageResult<UsageResponse> result = carbonService.getBuildingUsages(findBuilding.getId());
@@ -84,10 +86,10 @@ class CarbonServiceTest {
         //then
         System.out.println("buildingUsages = " + buildingUsages);
         assertThat(buildingUsages.get(0).getYear()).isEqualTo(2017);
-        assertThat(buildingUsages.get(0).getUsages()[0]).isEqualTo(0);
-        assertThat(buildingUsages.get(0).getUsages()[6]).isEqualTo(27);
+        assertThat(buildingUsages.get(0).getUsages()[0].getData()).isEqualTo(0);
+        assertThat(buildingUsages.get(0).getUsages()[6].getData()).isEqualTo(27);
         assertThat(buildingUsages.get(1).getYear()).isEqualTo(2019);
-        assertThat(buildingUsages.get(1).getUsages()[0]).isEqualTo(0);
-        assertThat(buildingUsages.get(1).getUsages()[6]).isEqualTo(57);
+        assertThat(buildingUsages.get(1).getUsages()[0].getData()).isEqualTo(0);
+        assertThat(buildingUsages.get(1).getUsages()[6].getData()).isEqualTo(57);
     }
 }

@@ -1,6 +1,7 @@
 package com.capstone.carbonlive.controller;
 
 import com.capstone.carbonlive.dto.CarbonYearResponse;
+import com.capstone.carbonlive.dto.UsagePredictionResponse;
 import com.capstone.carbonlive.dto.UsageResponse;
 import com.capstone.carbonlive.dto.UsageResult;
 import com.capstone.carbonlive.restdocs.AbstractRestDocsTest;
@@ -9,7 +10,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.http.MediaType;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -69,17 +69,23 @@ class CarbonControllerTest extends AbstractRestDocsTest {
     @Test
     @DisplayName("건물별 탄소 배출량")
     public void getBuildingUsages() throws Exception {
-        int[] usages = IntStream.rangeClosed(1, 12).toArray();
+        UsagePredictionResponse[] usages1 = new UsagePredictionResponse[12];
+        IntStream.range(0, 12).forEach(i -> usages1[i] = UsagePredictionResponse.builder()
+                .data(i + 1)
+                .prediction(false)
+                .build()
+        );
         ArrayList<UsageResponse> list = new ArrayList<>();
 
         UsageResponse response1 = new UsageResponse();
         response1.setYear(2018);
-        System.arraycopy(usages, 0, response1.getUsages(), 0, 12);
+        System.arraycopy(usages1, 0, response1.getUsages(), 0, 12);
 
         UsageResponse response2 = new UsageResponse();
         response2.setYear(2019);
-        System.arraycopy(usages, 0, response2.getUsages(), 0, 12);
-        response2.getUsages()[11] = 16;
+        IntStream.range(0, 12).forEach(i -> response2.getUsages()[i] = UsagePredictionResponse.builder().data(i + 1).build());
+
+        response2.getUsages()[11].setData(16);
 
         list.add(response1);
         list.add(response2);
@@ -92,9 +98,9 @@ class CarbonControllerTest extends AbstractRestDocsTest {
         mockMvc.perform(get(uri + "{buildingCode}", 1L))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.result[0].year").value(2018))
-                .andExpect(jsonPath("$.result[0].usages[11]").value(12))
+                .andExpect(jsonPath("$.result[0].usages[11].data").value(12))
                 .andExpect(jsonPath("$.result[1].year").value(2019))
-                .andExpect(jsonPath("$.result[1].usages[11]").value(16))
+                .andExpect(jsonPath("$.result[1].usages[11].data").value(16))
                 .andDo(print())
                 .andDo(document("{class-name}/{method-name}",
                         preprocessRequest(prettyPrint()),
@@ -103,7 +109,9 @@ class CarbonControllerTest extends AbstractRestDocsTest {
                         responseFields(
                                 fieldWithPath("result").description("결과 반환"),
                                 fieldWithPath("result[].year").description("년도"),
-                                fieldWithPath("result[].usages").description("해당 년도에 따른 월별 사용량 집합(1월-12월)")
+                                fieldWithPath("result[].usages").description("해당 년도에 따른 월별 사용량 집합(1월-12월) + 예측값 여부"),
+                                fieldWithPath("result[].usages[].data").description("사용량"),
+                                fieldWithPath("result[].usages[].prediction").description("예측값: true, 실측값: false")
                         )
                 ));
 

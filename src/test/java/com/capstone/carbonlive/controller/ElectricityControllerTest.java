@@ -1,9 +1,6 @@
 package com.capstone.carbonlive.controller;
 
-import com.capstone.carbonlive.dto.SeasonResponse;
-import com.capstone.carbonlive.dto.UsageResponse;
-import com.capstone.carbonlive.dto.UsageResult;
-import com.capstone.carbonlive.dto.UsageWithNameResponse;
+import com.capstone.carbonlive.dto.*;
 import com.capstone.carbonlive.restdocs.AbstractRestDocsTest;
 import com.capstone.carbonlive.service.ElectricityService;
 import org.junit.jupiter.api.DisplayName;
@@ -39,17 +36,20 @@ class ElectricityControllerTest extends AbstractRestDocsTest {
     @Test
         //@WithMockUser // 스프링 시큐리티 회피
     void getElectricityEach() throws Exception {
-        int[] usages = IntStream.rangeClosed(1, 12).toArray();
         ArrayList<UsageResponse> list = new ArrayList<>();
 
         UsageResponse response1 = new UsageResponse();
         response1.setYear(2018);
-        System.arraycopy(usages, 0, response1.getUsages(), 0, 12);
+        IntStream.range(0, 12).forEach(i ->
+                response1.getUsages()[i] = UsagePredictionResponse.builder().data(i + 1).build()
+        );
 
         UsageResponse response2 = new UsageResponse();
         response2.setYear(2019);
-        System.arraycopy(usages, 0, response2.getUsages(), 0, 12);
-        response2.getUsages()[11] = 16;
+        IntStream.range(0, 12).forEach(i ->
+                response2.getUsages()[i] = UsagePredictionResponse.builder().data(i + 1).build()
+        );
+        response2.getUsages()[11].setData(16);
 
         list.add(response1);
         list.add(response2);
@@ -63,9 +63,9 @@ class ElectricityControllerTest extends AbstractRestDocsTest {
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.result[0].year").value(2018))
-                .andExpect(jsonPath("$.result[0].usages[11]").value(12))
+                .andExpect(jsonPath("$.result[0].usages[11].data").value(12))
                 .andExpect(jsonPath("$.result[1].year").value(2019))
-                .andExpect(jsonPath("$.result[1].usages[11]").value(16))
+                .andExpect(jsonPath("$.result[1].usages[11].data").value(16))
                 .andDo(print())
                 .andDo(document("{class-name}/{method-name}",
                         preprocessRequest(prettyPrint()),
@@ -74,7 +74,9 @@ class ElectricityControllerTest extends AbstractRestDocsTest {
                         responseFields(
                                 fieldWithPath("result").description("결과 반환"),
                                 fieldWithPath("result[].year").description("년도"),
-                                fieldWithPath("result[].usages").description("해당 년도에 따른 월별 사용량 집합(1월-12월)")
+                                fieldWithPath("result[].usages").description("해당 년도에 따른 월별 사용량 집합(1월-12월)"),
+                                fieldWithPath("result[].usages[].data").description("사용량"),
+                                fieldWithPath("result[].usages[].prediction").description("예측값: true, 실측값: false")
                         )
                 ));
 
@@ -140,12 +142,15 @@ class ElectricityControllerTest extends AbstractRestDocsTest {
         response2.setName("60주년기념관");
 
         UsageResult<UsageResponse> usageResult = new UsageResult<>(new ArrayList<>());
-        int[] usages1 = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12};
-        int[] usages2 = {13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24};
         UsageResponse usageResponse1 = new UsageResponse(2017);
-        usageResponse1.setUsages(usages1);
+        IntStream.range(0, 12).forEach(i ->
+                usageResponse1.getUsages()[i] = UsagePredictionResponse.builder().data(i + 1).build()
+        );
         UsageResponse usageResponse2 = new UsageResponse(2018);
-        usageResponse2.setUsages(usages2);
+        IntStream.range(0, 12).forEach(i ->
+                usageResponse2.getUsages()[i] = UsagePredictionResponse.builder().data(i + 13).build()
+        );
+
         usageResult.add(usageResponse1);
         usageResult.add(usageResponse2);
 
@@ -165,7 +170,7 @@ class ElectricityControllerTest extends AbstractRestDocsTest {
                 .andExpect(jsonPath("$.result[1].name").value("60주년기념관"))
                 .andExpect(jsonPath("$.result[1].usagesList.length()").value(2))
                 .andExpect(jsonPath("$.result[1].usagesList[0].year").value(2017))
-                .andExpect(jsonPath("$.result[1].usagesList[1].usages[11]").value(24))
+                .andExpect(jsonPath("$.result[1].usagesList[1].usages[11].data").value(24))
                 .andDo(print())
                 .andDo(document("{class-name}/{method-name}",
                         preprocessRequest(prettyPrint()),
@@ -175,7 +180,9 @@ class ElectricityControllerTest extends AbstractRestDocsTest {
                                 fieldWithPath("result[].name").description("건물명"),
                                 fieldWithPath("result[].usagesList").description("사용량 데이터"),
                                 fieldWithPath("result[].usagesList[].year").description("해당 사용량 데이터의 년도"),
-                                fieldWithPath("result[].usagesList[].usages").description("월별 사용량(1월-12월)")
+                                fieldWithPath("result[].usagesList[].usages").description("월별 사용량(1월-12월)"),
+                                fieldWithPath("result[].usagesList[].usages[].data").description("사용량"),
+                                fieldWithPath("result[].usagesList[].usages[].prediction").description("예측값: true, 실측값: false")
                         )
                 ));
 

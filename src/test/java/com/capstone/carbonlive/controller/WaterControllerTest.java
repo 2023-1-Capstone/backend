@@ -1,5 +1,6 @@
 package com.capstone.carbonlive.controller;
 
+import com.capstone.carbonlive.dto.UsagePredictionResponse;
 import com.capstone.carbonlive.dto.UsageResponse;
 import com.capstone.carbonlive.dto.UsageResult;
 import com.capstone.carbonlive.restdocs.AbstractRestDocsTest;
@@ -37,12 +38,15 @@ class WaterControllerTest extends AbstractRestDocsTest {
         List<UsageResponse> responses = new ArrayList<>();
 
         UsageResponse response1 = new UsageResponse(2018);
-        int[] testUsages = IntStream.rangeClosed(1, 12).toArray();
-        response1.setUsages(testUsages);
+        IntStream.range(0, 12).forEach(i ->
+                response1.getUsages()[i] = UsagePredictionResponse.builder().data(i + 1).build()
+        );
 
         UsageResponse response2 = new UsageResponse(2019);
-        System.arraycopy(testUsages, 0, response2.getUsages(), 0, 12);
-        response2.getUsages()[11] = 16;
+        IntStream.range(0, 12).forEach(i ->
+                response2.getUsages()[i] = UsagePredictionResponse.builder().data(i + 1).build()
+        );
+        response2.getUsages()[11].setData(16);
 
         responses.add(response1);
         responses.add(response2);
@@ -60,10 +64,10 @@ class WaterControllerTest extends AbstractRestDocsTest {
                 .andExpect(jsonPath("$.result[1].year").value(2019));
 
         for (int i = 0; i < 12; i++) {
-            resultActions.andExpect(jsonPath("$.result[0].usages[" + i + "]").value(i + 1));
+            resultActions.andExpect(jsonPath("$.result[0].usages[" + i + "].data").value(i + 1));
         }
 
-        resultActions.andExpect(jsonPath("$.result[1].usages[11]").value(16))
+        resultActions.andExpect(jsonPath("$.result[1].usages[11].data").value(16))
                 .andDo(print())
                 .andDo(document("{class-name}/{method-name}",
                         preprocessRequest(prettyPrint()),
@@ -71,7 +75,9 @@ class WaterControllerTest extends AbstractRestDocsTest {
                         responseFields(
                                 fieldWithPath("result").description("결과 반환"),
                                 fieldWithPath("result[].year").description("년도"),
-                                fieldWithPath("result[].usages").description("해당 년도에 따른 월별 사용량 집합(1월-12월)")
+                                fieldWithPath("result[].usages").description("해당 년도에 따른 월별 사용량 집합(1월-12월)"),
+                                fieldWithPath("result[].usages[].data").description("사용량"),
+                                fieldWithPath("result[].usages[].prediction").description("예측값: true, 실측값: false")
                         ))
                 );
 

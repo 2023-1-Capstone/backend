@@ -33,6 +33,11 @@ class WaterServiceTest {
                     .build();
             waterRepository.save(water);
         });
+        waterRepository.save(Water.builder()
+                .usages(453583)
+                .recordedAt(LocalDate.of(2019, 10, 1))
+                .prediction(true)
+                .build()); // 이 데이터가 반영되면 안된다.
     }
 
     @Test

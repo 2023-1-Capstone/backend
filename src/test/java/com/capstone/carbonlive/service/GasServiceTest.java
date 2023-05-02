@@ -56,6 +56,12 @@ class GasServiceTest {
                     .building(building)
                     .build());
         }
+        gasRepository.save(Gas.builder()
+                .recordedAt(LocalDate.of(2021, 1, 1))
+                .usages(52349)
+                .building(building)
+                .prediction(true)
+                .build()); // 이 값이 반영되면 안된다.
     }
 
     @Test

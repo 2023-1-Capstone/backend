@@ -44,8 +44,8 @@ class GasControllerTest extends AbstractRestDocsTest {
     void beforeEach() {
         Building building = Building.builder()
                 .name("building1")
-                .gasArea(new BigDecimal(1111.11))
-                .elecArea(new BigDecimal(2222.22))
+                .gasArea(new BigDecimal("1111.11"))
+                .elecArea(new BigDecimal("2222.22"))
                 .gasDescription(null)
                 .elecDescription(null)
                 .build();
@@ -54,12 +54,12 @@ class GasControllerTest extends AbstractRestDocsTest {
 
         for (int i = 1; i < 13; i++) {
             gasRepository.save(Gas.builder().
-                    recordedAt(LocalDate.of(2022, i, 01))
+                    recordedAt(LocalDate.of(2022, i, 1))
                     .usages(i)
                     .building(building)
                     .build());
             gasRepository.save(Gas.builder().
-                    recordedAt(LocalDate.of(2021, i, 01))
+                    recordedAt(LocalDate.of(2021, i, 1))
                     .usages(2 * i)
                     .building(building)
                     .build());
@@ -75,11 +75,11 @@ class GasControllerTest extends AbstractRestDocsTest {
         //then
         result.andExpect(status().isOk())
                 .andExpect(jsonPath("$.result[0].year").value(2021))
-                .andExpect(jsonPath("$.result[0].usages[0]").value(2))
-                .andExpect(jsonPath("$.result[0].usages[11]").value(24))
+                .andExpect(jsonPath("$.result[0].usages[0].data").value(2))
+                .andExpect(jsonPath("$.result[0].usages[11].data").value(24))
                 .andExpect(jsonPath("$.result[1].year").value(2022))
-                .andExpect(jsonPath("$.result[1].usages[0]").value(1))
-                .andExpect(jsonPath("$.result[1].usages[11]").value(12));
+                .andExpect(jsonPath("$.result[1].usages[0].data").value(1))
+                .andExpect(jsonPath("$.result[1].usages[11].data").value(12));
 
         //docs
         result.andDo(print())
@@ -90,7 +90,9 @@ class GasControllerTest extends AbstractRestDocsTest {
                         responseFields(
                                 fieldWithPath("result").description("결과 반환"),
                                 fieldWithPath("result[].year").description("년도"),
-                                fieldWithPath("result[].usages").description("해당 년도에 따른 월별 사용량 집합(1월-12월)")
+                                fieldWithPath("result[].usages").description("해당 년도에 따른 월별 사용량 집합(1월-12월)"),
+                                fieldWithPath("result[].usages[].data").description("사용량"),
+                                fieldWithPath("result[].usages[].prediction").description("예측값: true, 실측값: false")
                         )
                 ));
     }
@@ -136,7 +138,7 @@ class GasControllerTest extends AbstractRestDocsTest {
 
         for (int i = 0; i < 12; i++) {
             resultActions.andExpect(
-                    jsonPath("$.result[0].usagesList[1].usages[" + i + "]").value(i + 1)
+                    jsonPath("$.result[0].usagesList[1].usages[" + i + "].data").value(i + 1)
             );
         }
 
@@ -149,7 +151,9 @@ class GasControllerTest extends AbstractRestDocsTest {
                                 fieldWithPath("result[].name").description("건물명"),
                                 fieldWithPath("result[].usagesList").description("사용량 데이터"),
                                 fieldWithPath("result[].usagesList[].year").description("해당 사용량 데이터의 년도"),
-                                fieldWithPath("result[].usagesList[].usages").description("월별 사용량(1월-12월)")
+                                fieldWithPath("result[].usagesList[].usages").description("월별 사용량(1월-12월)"),
+                                fieldWithPath("result[].usagesList[].usages[].data").description("사용량"),
+                                fieldWithPath("result[].usagesList[].usages[].prediction").description("예측값: true, 실측값: false")
                         )
                 ));
     }

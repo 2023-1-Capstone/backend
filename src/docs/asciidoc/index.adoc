@@ -70,6 +70,13 @@ include::{snippets}/water-controller-test/get-water/http-response.adoc[]
 include::{snippets}/water-controller-test/get-water/response-fields.adoc[]
 
 == 탄소 배출량
+=== 건물별 탄소 배출량
+.request
+include::{snippets}/carbon-controller-test/get-building-usages/http-request.adoc[]
+include::{snippets}/carbon-controller-test/get-building-usages/path-parameters.adoc[]
+.response
+include::{snippets}/carbon-controller-test/get-building-usages/response-body.adoc[]
+include::{snippets}/carbon-controller-test/get-building-usages/response-fields.adoc[]
 === 년도별 전체 탄소 배출량
 .request
 include::{snippets}/carbon-controller-test/get-year-usages/http-request.adoc[]

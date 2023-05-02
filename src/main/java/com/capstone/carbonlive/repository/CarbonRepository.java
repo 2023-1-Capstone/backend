@@ -8,4 +8,5 @@ import java.util.List;
 
 public interface CarbonRepository extends JpaRepository<Carbon, Long> {
     List<Carbon> findByBuildingOrderByRecordedAtAsc(Building building);
+    List<Carbon> findByBuildingOrderByRecordedAtAscPredictionDesc(Building building);
 }

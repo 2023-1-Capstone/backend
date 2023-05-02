@@ -7,7 +7,6 @@ import com.capstone.carbonlive.entity.Building;
 import com.capstone.carbonlive.entity.Carbon;
 import com.capstone.carbonlive.repository.BuildingRepository;
 import com.capstone.carbonlive.repository.CarbonRepository;
-import com.capstone.carbonlive.service.common.GetUsageResult;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -15,7 +14,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.capstone.carbonlive.service.common.GetUsageResult.*;
+import static com.capstone.carbonlive.service.common.GetUsageResult.getBuildingUsageResult;
 
 @Service
 @RequiredArgsConstructor
@@ -26,7 +25,8 @@ public class CarbonServiceImpl implements CarbonService{
     @Override
     public UsageResult<CarbonYearResponse> getYearsUsages() {
         UsageResult<CarbonYearResponse> result = new UsageResult<>(new ArrayList<>());
-        List<Carbon> carbonList = carbonRepository.findAll(Sort.by("recordedAt").ascending());
+        List<Carbon> carbonList = carbonRepository.findAll(Sort.by("recordedAt").ascending()
+                .and(Sort.by("prediction").descending()));
         int year = -1, usages = 0;
         for (Carbon c : carbonList){
             if (c.getRecordedAt().getYear() != year){
@@ -52,7 +52,7 @@ public class CarbonServiceImpl implements CarbonService{
     public UsageResult<UsageResponse> getBuildingUsages(Long buildingId) {
         Building building = buildingRepository.findById(buildingId).orElseThrow(RuntimeException::new);
 
-        List<Carbon> carbonList = carbonRepository.findByBuildingOrderByRecordedAtAsc(building);
+        List<Carbon> carbonList = carbonRepository.findByBuildingOrderByRecordedAtAscPredictionDesc(building);
 
         return getBuildingUsageResult(carbonList);
     }

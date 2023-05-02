@@ -30,12 +30,13 @@ class GasServiceTest {
     @Autowired GasRepository gasRepository;
     @Autowired GasService gasService;
 
+
     @BeforeEach
     public void beforeEach() {
         Building building = Building.builder()
                 .name("building1")
-                .gasArea(new BigDecimal(1111.11))
-                .elecArea(new BigDecimal(2222.22))
+                .gasArea(new BigDecimal("1111.11"))
+                .elecArea(new BigDecimal("2222.22"))
                 .gasDescription(null)
                 .elecDescription(null)
                 .build();
@@ -43,13 +44,15 @@ class GasServiceTest {
 
         for (int i = 1; i < 13; i++) {
             gasRepository.save(Gas.builder().
-                    recordedAt(LocalDate.of(2022, i, 01))
+                    recordedAt(LocalDate.of(2022, i, 1))
                     .usages(i)
+                    .prediction((i % 3 == 0))
                     .building(building)
                     .build());
             gasRepository.save(Gas.builder().
-                    recordedAt(LocalDate.of(2021, i, 01))
+                    recordedAt(LocalDate.of(2021, i, 1))
                     .usages(2 * i)
+                    .prediction((i % 2 == 0))
                     .building(building)
                     .build());
         }
@@ -57,7 +60,7 @@ class GasServiceTest {
 
     @Test
     @DisplayName("건물별 가스 정보 출력")
-    public void findByBuilding() throws Exception {
+    public void findByBuilding() {
         //when
         Building findBuilding = buildingRepository.findByName("building1");
         UsageResult<UsageResponse> result = gasService.findByBuilding(findBuilding.getId());
@@ -66,11 +69,17 @@ class GasServiceTest {
         System.out.println("result = " + result);
         assertThat(result.getResult().get(0).getYear()).isEqualTo(2021);
         assertThat(result.getResult().get(0).getUsages().length).isEqualTo(12);
+        for (int i = 0; i < 12; i++) {
+            assertThat(result.getResult().get(0).getUsages()[i].getData()).isEqualTo(2 * (i + 1));
+            assertThat(result.getResult().get(0).getUsages()[i].isPrediction()).isEqualTo( (i + 1) % 2 == 0 );
+            assertThat(result.getResult().get(1).getUsages()[i].getData()).isEqualTo(i + 1);
+            assertThat(result.getResult().get(1).getUsages()[i].isPrediction()).isEqualTo( (i + 1) % 3 == 0 );
+        }
     }
 
     @Test
     @DisplayName("계절별 가스 사용량 출력")
-    public void findBySeason() throws Exception {
+    public void findBySeason() {
         //when
         UsageResult<SeasonResponse> result = gasService.findBySeason();
 
@@ -94,9 +103,10 @@ class GasServiceTest {
         IntStream.range(0, 2).forEach(i -> {
             assertThat(result.get(0).getUsagesList().get(i).getYear()).isEqualTo(2021 + i);
 
-            IntStream.range(0, 12).forEach(j ->
-                assertThat(result.get(0).getUsagesList().get(i).getUsages()[j]).isEqualTo((j + 1) * (2 - i))
-            );
+            IntStream.range(0, 12).forEach(j -> {
+                assertThat(result.get(0).getUsagesList().get(i).getUsages()[j].getData()).isEqualTo((j + 1) * (2 - i));
+                assertThat(result.get(0).getUsagesList().get(i).getUsages()[j].isPrediction()).isEqualTo( (j + 1) % (2 + i) == 0);
+            });
         });
     }
 }

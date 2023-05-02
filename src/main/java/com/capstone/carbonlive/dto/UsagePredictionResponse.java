@@ -5,7 +5,7 @@ import lombok.Data;
 
 @Data
 @Builder
-public class UsagesPredictionResponse {
+public class UsagePredictionResponse {
     private int data;
     private boolean prediction;
 }

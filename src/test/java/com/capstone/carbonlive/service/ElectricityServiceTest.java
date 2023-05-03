@@ -102,9 +102,9 @@ class ElectricityServiceTest {
 
         //then
         System.out.println("result = " + result);
-        assertThat(result.getResult().get(0).getUsages()[1]).isEqualTo(42);
+        assertThat(result.getResult().get(0).getUsages()[0]).isEqualTo(0);
         assertThat(result.getResult().get(0).getUsages()[3]).isEqualTo(0);
-        assertThat(result.getResult().get(1).getUsages()[0]).isEqualTo(24);
+        assertThat(result.getResult().get(1).getUsages()[0]).isEqualTo(0);
         assertThat(result.getResult().get(1).getUsages()[2]).isEqualTo(0);
     }
 

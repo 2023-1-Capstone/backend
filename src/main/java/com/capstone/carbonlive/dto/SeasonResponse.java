@@ -8,9 +8,6 @@ public class SeasonResponse {
     private int endYear;
     private int[] usages = new int[4];
 
-    public SeasonResponse() {
-    }
-
     public SeasonResponse(int startYear) {
         this.startYear = startYear;
         this.endYear = startYear + 1;

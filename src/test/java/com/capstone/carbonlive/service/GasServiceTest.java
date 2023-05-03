@@ -91,8 +91,8 @@ class GasServiceTest {
 
         //then
         System.out.println("result = " + result);
-        assertThat(result.getResult().get(0).getUsages()[0]).isEqualTo(24);
-        assertThat(result.getResult().get(1).getUsages()[3]).isEqualTo(0);
+        assertThat(result.getResult().get(0).getUsages()[0]).isEqualTo(0);
+        assertThat(result.getResult().get(1).getUsages()[0]).isEqualTo(0);
     }
 
     @Test

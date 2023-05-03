@@ -43,9 +43,12 @@ class WaterControllerTest extends AbstractRestDocsTest {
         );
 
         UsageResponse response2 = new UsageResponse(2019);
-        IntStream.range(0, 12).forEach(i ->
+        IntStream.range(0, 9).forEach(i ->
                 response2.getUsages()[i] = UsagePredictionResponse.builder().data(i + 1).build()
         );
+        IntStream.range(8, 12).forEach(i ->
+                response2.getUsages()[i] = UsagePredictionResponse.builder().data(i + 1).prediction(true).build()
+        ); //2019.09 부터 예측값
         response2.getUsages()[11].setData(16);
 
         responses.add(response1);
@@ -67,7 +70,11 @@ class WaterControllerTest extends AbstractRestDocsTest {
             resultActions.andExpect(jsonPath("$.result[0].usages[" + i + "].data").value(i + 1));
         }
 
-        resultActions.andExpect(jsonPath("$.result[1].usages[11].data").value(16))
+        resultActions
+                .andExpect(jsonPath("$.result[1].usages[0].prediction").value(false))
+                .andExpect(jsonPath("$.result[1].usages[8].prediction").value(true))
+                .andExpect(jsonPath("$.result[1].usages[11].prediction").value(true))
+                .andExpect(jsonPath("$.result[1].usages[11].data").value(16))
                 .andDo(print())
                 .andDo(document("{class-name}/{method-name}",
                         preprocessRequest(prettyPrint()),

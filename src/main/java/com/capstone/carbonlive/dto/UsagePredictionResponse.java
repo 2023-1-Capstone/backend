@@ -6,6 +6,6 @@ import lombok.Data;
 @Data
 @Builder
 public class UsagePredictionResponse {
-    private int data;
-    private boolean prediction;
+    private Integer data;
+    private Integer prediction;
 }

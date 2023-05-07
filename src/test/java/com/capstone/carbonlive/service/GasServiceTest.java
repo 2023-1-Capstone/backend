@@ -46,11 +46,13 @@ class GasServiceTest {
             gasRepository.save(Gas.builder().
                     recordedAt(LocalDate.of(2022, i, 1))
                     .usages(i)
+                    .prediction((i % 3 == 0))
                     .building(building)
                     .build());
             gasRepository.save(Gas.builder().
                     recordedAt(LocalDate.of(2021, i, 1))
                     .usages(2 * i)
+                    .prediction((i % 2 == 0))
                     .building(building)
                     .build());
         }
@@ -88,8 +90,8 @@ class GasServiceTest {
 
         //then
         System.out.println("result = " + result);
-        assertThat(result.getResult().get(0).getUsages()[0]).isEqualTo(24);
-        assertThat(result.getResult().get(1).getUsages()[3]).isEqualTo(0);
+        assertThat(result.getResult().get(0).getUsages()[0]).isEqualTo(0);
+        assertThat(result.getResult().get(1).getUsages()[0]).isEqualTo(0);
     }
 
     @Test

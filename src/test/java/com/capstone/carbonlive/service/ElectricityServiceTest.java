@@ -54,10 +54,12 @@ class ElectricityServiceTest {
             List<Electricity> tempList = new ArrayList<>();
             IntStream.rangeClosed(2, 10).forEach(i -> {
                 int year = i > 5 ? 2018 : 2019;
+                boolean sw = (i % 2 == 0);
                 Electricity e = Electricity.builder()
                         .recordedAt(LocalDate.of(year, i, 1))
                         .building(sampleBuilding)
                         .usages(i)
+                        .prediction(sw)
                         .build();
                 tempList.add(e);
             });
@@ -94,6 +96,7 @@ class ElectricityServiceTest {
 
             for (int j = 0; j < 12; j++){
                 assertThat(curUsages[j].getData()).isEqualTo(expectUsages[i][j]);
+                
                 if (i == 0 && j == 0){
                     assertThat(curUsages[j].getPrediction()).isEqualTo(0); // 예측 값만 들어있는 경우 판단.
                     continue;
@@ -111,9 +114,9 @@ class ElectricityServiceTest {
 
         //then
         System.out.println("result = " + result);
-        assertThat(result.getResult().get(0).getUsages()[1]).isEqualTo(42);
+        assertThat(result.getResult().get(0).getUsages()[0]).isEqualTo(0);
         assertThat(result.getResult().get(0).getUsages()[3]).isEqualTo(0);
-        assertThat(result.getResult().get(1).getUsages()[0]).isEqualTo(24);
+        assertThat(result.getResult().get(1).getUsages()[0]).isEqualTo(0);
         assertThat(result.getResult().get(1).getUsages()[2]).isEqualTo(0);
     }
 

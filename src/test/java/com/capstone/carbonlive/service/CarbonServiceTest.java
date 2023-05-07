@@ -47,6 +47,7 @@ class CarbonServiceTest {
                     .building(sampleBuilding)
                     .usages(50 + i)
                     .recordedAt(LocalDate.of(2019, i, 1))
+                    .prediction(i == 5)
                     .build();
             carbonList.add(carbon);
         });
@@ -54,6 +55,7 @@ class CarbonServiceTest {
                 .usages(27)
                 .building(sampleBuilding)
                 .recordedAt(LocalDate.of(2017, 7, 1))
+                .prediction(false)
                 .build();
         carbonList.add(carbon);
         Carbon predictionCarbon = Carbon.builder()

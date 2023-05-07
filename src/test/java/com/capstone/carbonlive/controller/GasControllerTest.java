@@ -57,8 +57,11 @@ class GasControllerTest extends AbstractRestDocsTest {
             gasRepository.save(Gas.builder().
                     recordedAt(LocalDate.of(2022, i, 1))
                     .usages(i)
+                    .prediction(false)
                     .building(building)
                     .build());
+        }
+        for (int i = 10; i < 13; i++) { //2022.10 부터 예측값
             gasRepository.save(Gas.builder().
                     recordedAt(LocalDate.of(2021, i, 1))
                     .usages(2 * i)
@@ -137,7 +140,11 @@ class GasControllerTest extends AbstractRestDocsTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.result[0].name").value("building1"))
                 .andExpect(jsonPath("$.result[0].usagesList[0].year").value(2021))
-                .andExpect(jsonPath("$.result[0].usagesList[1].year").value(2022));
+                .andExpect(jsonPath("$.result[0].usagesList[0].usages[0].data").value(2))
+                .andExpect(jsonPath("$.result[0].usagesList[0].usages[0].prediction").value(false))
+                .andExpect(jsonPath("$.result[0].usagesList[1].year").value(2022))
+                .andExpect(jsonPath("$.result[0].usagesList[1].usages[11].data").value(12))
+                .andExpect(jsonPath("$.result[0].usagesList[1].usages[11].prediction").value(true));
 
         for (int i = 0; i < 12; i++) {
             resultActions.andExpect(

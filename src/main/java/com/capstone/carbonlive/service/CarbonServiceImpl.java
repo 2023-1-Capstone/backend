@@ -25,7 +25,8 @@ public class CarbonServiceImpl implements CarbonService{
     @Override
     public UsageResult<CarbonYearResponse> getYearsUsages() {
         UsageResult<CarbonYearResponse> result = new UsageResult<>(new ArrayList<>());
-        List<Carbon> carbonList = carbonRepository.findAll(Sort.by("recordedAt").ascending());
+        List<Carbon> carbonList = carbonRepository.findAll(Sort.by("recordedAt").ascending()
+                .and(Sort.by("prediction").descending()));
         int year = -1, usages = 0;
         for (Carbon c : carbonList){
             if (c.getUsages() == null)
@@ -54,7 +55,7 @@ public class CarbonServiceImpl implements CarbonService{
     public UsageResult<UsageResponse> getBuildingUsages(Long buildingId) {
         Building building = buildingRepository.findById(buildingId).orElseThrow(RuntimeException::new);
 
-        List<Carbon> carbonList = carbonRepository.findByBuildingOrderByRecordedAtAsc(building);
+        List<Carbon> carbonList = carbonRepository.findByBuildingOrderByRecordedAtAscPredictionDesc(building);
 
         return getBuildingUsageResult(carbonList);
     }

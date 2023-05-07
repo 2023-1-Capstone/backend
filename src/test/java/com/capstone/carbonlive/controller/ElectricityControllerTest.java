@@ -148,6 +148,7 @@ class ElectricityControllerTest extends AbstractRestDocsTest {
 
         UsageResult<UsageResponse> usageResult = new UsageResult<>(new ArrayList<>());
         UsageResponse usageResponse1 = new UsageResponse(2017);
+
         IntStream.range(0, 11).forEach(i ->
                 usageResponse1.getUsages()[i] = UsagePredictionResponse.builder().data(i + 1).build()
         );
@@ -167,6 +168,7 @@ class ElectricityControllerTest extends AbstractRestDocsTest {
         result.add(response1);
         result.add(response2);
 
+        System.out.println("result = " + result);
         given(electricityService.getAll())
                 .willReturn(result);
         // when

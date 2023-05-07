@@ -34,7 +34,7 @@ public class GasService {
         Building building = buildingRepository.findById(buildingId)
                 .orElseThrow(RuntimeException::new);
 
-        List<Gas> gasList = gasRepository.findByBuildingOrderByRecordedAtAsc(building);
+        List<Gas> gasList = gasRepository.findByBuildingOrderByRecordedAtAscPredictionDesc(building);
 
         return getBuildingUsageResult(gasList);
     }

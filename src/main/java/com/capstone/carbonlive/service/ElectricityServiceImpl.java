@@ -33,7 +33,7 @@ public class ElectricityServiceImpl implements ElectricityService {
         Building building = buildingRepository.findById(id).orElseThrow(EntityNotFoundException::new);
 
         List<Electricity> electricityList = electricityRepository.findAllByBuilding(building,
-                Sort.by("recordedAt").ascending());
+                Sort.by("recordedAt").ascending().and(Sort.by("prediction").descending()));
 
         return getBuildingUsageResult(electricityList);
     }

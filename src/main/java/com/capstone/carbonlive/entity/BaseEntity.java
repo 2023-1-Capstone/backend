@@ -18,9 +18,9 @@ public abstract class BaseEntity {
     @Column(nullable = false)
     protected LocalDate recordedAt;
 
-    @Column(nullable = false)
-    protected int usages;
+    @Column
+    protected Integer usages;
 
-    @Column(nullable = false)
-    protected boolean prediction;
+    @Column
+    protected Integer prediction;
 }

@@ -21,7 +21,7 @@ public class Gas extends BaseEntity{
     private Building building;
 
     @Builder(toBuilder = true)
-    public Gas(LocalDate recordedAt, int usages, boolean prediction, Building building) {
+    public Gas(LocalDate recordedAt, Integer usages, Integer prediction, Building building) {
         this.recordedAt = recordedAt;
         this.usages = usages;
         this.prediction = prediction;

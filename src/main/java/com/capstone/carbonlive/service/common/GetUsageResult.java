@@ -27,14 +27,14 @@ public class GetUsageResult {
                 year = curYear;
                 IntStream.range(0, 12).forEach(i ->
                         usages[i] = UsagePredictionResponse.builder()
-                        .data(0)
-                        .prediction(false)
                         .build());
             }
 
             int eMonth = data.getRecordedAt().getMonth().getValue() - 1;
-            usages[eMonth].setData(data.getUsages());
-            usages[eMonth].setPrediction(data.isPrediction());
+            if (usages[eMonth].getData() == null) {
+                usages[eMonth].setData(data.getUsages());
+                usages[eMonth].setPrediction(data.getPrediction());
+            }
         }
         if (year > 0){
             insertUsageResponse(result, year, usages);

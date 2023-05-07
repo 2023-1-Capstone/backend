@@ -29,6 +29,9 @@ public class CarbonServiceImpl implements CarbonService{
                 .and(Sort.by("prediction").descending()));
         int year = -1, usages = 0;
         for (Carbon c : carbonList){
+            if (c.getUsages() == null)
+                continue;
+
             if (c.getRecordedAt().getYear() != year){
                 CarbonYearResponse carbonYearResponse = new CarbonYearResponse(year, usages);
                 result.add(carbonYearResponse);

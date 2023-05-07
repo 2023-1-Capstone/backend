@@ -58,11 +58,18 @@ class CarbonServiceTest {
                 .prediction(false)
                 .build();
         carbonList.add(carbon);
+        Carbon predictionCarbon = Carbon.builder()
+                .recordedAt(LocalDate.of(2018, 2, 1))
+                .prediction(10023)
+                .building(sampleBuilding)
+                .build(); // 포함되면 안된다.
+        carbonList.add(predictionCarbon);
 
         carbonRepository.saveAll(carbonList);
     }
 
     @Test
+    @DisplayName("년도 단위 탄소 총 배출량")
     void getYearsUsages() {
         UsageResult<CarbonYearResponse> yearsUsagesResult = carbonService.getYearsUsages();
         List<CarbonYearResponse> yearUsages = yearsUsagesResult.getResult();

@@ -31,8 +31,8 @@ public class GasService {
      * 건물별 가스 사용량
      */
     public UsageResult<UsageResponse> findByBuilding(Long buildingId) {
-        Building building = buildingRepository.findById(buildingId).orElseThrow(
-                () -> new RuntimeException());
+        Building building = buildingRepository.findById(buildingId)
+                .orElseThrow(RuntimeException::new);
 
         List<Gas> gasList = gasRepository.findByBuildingOrderByRecordedAtAscPredictionDesc(building);
 

@@ -32,10 +32,13 @@ class ElectricityServiceTest {
 
     private final String[] name = {"본관", "60주년기념관"};
     private final int[] expectYear = {2018, 2019};
-    private final int[][] expectUsages = { {0, 0, 0, 0, 0, 6, 7, 8, 9, 10, 0, 0}, {0, 2, 3, 4, 5, 0, 0, 0, 0, 0, 0, 0} };
-    private final boolean[][] expectPrediction = {
-            {false, false, false, false, false, true, false, true, false, true, false, false},
-            {false, true, false, true, false, false, false, false, false, false, false, false}
+    private final Integer[][] expectUsages = {
+            {null, null, null, null, null, 6, 7, 8, 9, 10, null, null},
+            {null, 2, 3, 4, 5, null, null, null, null, null, null, null}
+    };
+    private final Integer[][] expectPrediction = {
+            {0, null, null, null, null, null, null, null, null, null, null, null},
+            {null, null, null, null, null, null, null, null, null, null, null, null}
     };
 
     @BeforeEach
@@ -63,12 +66,16 @@ class ElectricityServiceTest {
 
             if (n.equals("본관")) {
                 tempList.add(Electricity.builder()
-                        .usages(1420)
                         .recordedAt(LocalDate.of(2018, 7, 1))
-                        .prediction(true)
+                        .prediction(100)
                         .building(sampleBuilding)
-                        .build());
-            } // 이 데이터는 포함되면 안된다.
+                        .build()); // 이 데이터는 포함되면 안된다.
+                tempList.add(Electricity.builder()
+                        .recordedAt(LocalDate.of(2018, 1, 1))
+                        .prediction(0)
+                        .building(sampleBuilding)
+                        .build()); // 이 데이터는 예측값으로 포함이 되어야 한다.
+            }
             electricityRepository.saveAll(tempList);
         }
     }
@@ -89,7 +96,12 @@ class ElectricityServiceTest {
 
             for (int j = 0; j < 12; j++){
                 assertThat(curUsages[j].getData()).isEqualTo(expectUsages[i][j]);
-                assertThat(curUsages[j].isPrediction()).isEqualTo(expectPrediction[i][j]);
+                
+                if (i == 0 && j == 0){
+                    assertThat(curUsages[j].getPrediction()).isEqualTo(0); // 예측 값만 들어있는 경우 판단.
+                    continue;
+                }
+                assertThat(curUsages[j].getPrediction()).isEqualTo(null);
             }
         }
     }
@@ -109,6 +121,7 @@ class ElectricityServiceTest {
     }
 
     @Test
+    @DisplayName("전체 전기 사용량 확인")
     void getAll() {
         // when
         UsageResult<UsageWithNameResponse> usageResult = electricityService.getAll();
@@ -121,6 +134,6 @@ class ElectricityServiceTest {
         assertThat(result.get(1).getName()).isEqualTo(this.name[1]);
 
         IntStream.rangeClosed(0, 11).forEach(i -> assertThat(result.get(1).getUsagesList().get(0).getUsages()[i].getData()).isEqualTo(expectUsages[0][i]));
-        IntStream.rangeClosed(0, 11).forEach(i -> assertThat(result.get(1).getUsagesList().get(0).getUsages()[i].isPrediction()).isEqualTo(expectPrediction[0][i]));
+        IntStream.rangeClosed(0, 11).forEach(i -> assertThat(result.get(1).getUsagesList().get(1).getUsages()[i].getPrediction()).isEqualTo(expectPrediction[1][i]));
     }
 }

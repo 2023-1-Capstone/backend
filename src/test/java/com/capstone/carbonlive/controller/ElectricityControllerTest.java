@@ -8,11 +8,13 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.test.web.servlet.ResultActions;
 
 import java.util.ArrayList;
 import java.util.stream.IntStream;
 
+import static org.hamcrest.Matchers.nullValue;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.times;
@@ -46,12 +48,9 @@ class ElectricityControllerTest extends AbstractRestDocsTest {
 
         UsageResponse response2 = new UsageResponse();
         response2.setYear(2019);
-        IntStream.range(0, 9).forEach(i ->
+        IntStream.range(0, 12).forEach(i ->
                 response2.getUsages()[i] = UsagePredictionResponse.builder().data(i + 1).build()
         );
-        IntStream.range(8, 12).forEach(i ->
-                response2.getUsages()[i] = UsagePredictionResponse.builder().data(i + 1).prediction(true).build()
-        ); //2019.09 부터 예측값
         response2.getUsages()[11].setData(16);
 
         list.add(response1);
@@ -67,14 +66,9 @@ class ElectricityControllerTest extends AbstractRestDocsTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.result[0].year").value(2018))
                 .andExpect(jsonPath("$.result[0].usages[11].data").value(12))
-                .andExpect(jsonPath("$.result[0].usages[11].prediction").value(false))
                 .andExpect(jsonPath("$.result[1].year").value(2019))
-                .andExpect(jsonPath("$.result[1].usages[7].data").value(8))
-                .andExpect(jsonPath("$.result[1].usages[7].prediction").value(false))
-                .andExpect(jsonPath("$.result[1].usages[8].data").value(9))
-                .andExpect(jsonPath("$.result[1].usages[8].prediction").value(true))
                 .andExpect(jsonPath("$.result[1].usages[11].data").value(16))
-                .andExpect(jsonPath("$.result[1].usages[11].prediction").value(true))
+                .andExpect(jsonPath("$.result[1].usages[11].prediction", nullValue()))
                 .andDo(print())
                 .andDo(document("{class-name}/{method-name}",
                         preprocessRequest(prettyPrint()),
@@ -84,8 +78,10 @@ class ElectricityControllerTest extends AbstractRestDocsTest {
                                 fieldWithPath("result").description("결과 반환"),
                                 fieldWithPath("result[].year").description("년도"),
                                 fieldWithPath("result[].usages").description("해당 년도에 따른 월별 사용량 집합(1월-12월)"),
-                                fieldWithPath("result[].usages[].data").description("사용량"),
-                                fieldWithPath("result[].usages[].prediction").description("예측값: true, 실측값: false")
+                                fieldWithPath("result[].usages[].data").type(JsonFieldType.NUMBER)
+                                        .description("실 사용량. null인 경우, 실측 사용량이 없음").optional(),
+                                fieldWithPath("result[].usages[].prediction").type(JsonFieldType.NUMBER)
+                                        .description("예측 사용량. null인 경우, 실측값이 존재하거나 예측 사용량이 없음").optional()
                         )
                 ));
 
@@ -152,16 +148,16 @@ class ElectricityControllerTest extends AbstractRestDocsTest {
 
         UsageResult<UsageResponse> usageResult = new UsageResult<>(new ArrayList<>());
         UsageResponse usageResponse1 = new UsageResponse(2017);
-        IntStream.range(0, 12).forEach(i ->
+
+        IntStream.range(0, 11).forEach(i ->
                 usageResponse1.getUsages()[i] = UsagePredictionResponse.builder().data(i + 1).build()
         );
+        usageResponse1.getUsages()[11] = UsagePredictionResponse.builder().prediction(100).build();
+
         UsageResponse usageResponse2 = new UsageResponse(2018);
-        IntStream.range(0, 9).forEach(i ->
-                usageResponse2.getUsages()[i] = UsagePredictionResponse.builder().data(i + 1).build()
+        IntStream.range(0, 12).forEach(i ->
+                usageResponse2.getUsages()[i] = UsagePredictionResponse.builder().data(i + 13).build()
         );
-        IntStream.range(8, 12).forEach(i ->
-                usageResponse2.getUsages()[i] = UsagePredictionResponse.builder().data(i + 1).prediction(true).build()
-        ); //2019.09 부터 예측값
 
         usageResult.add(usageResponse1);
         usageResult.add(usageResponse2);
@@ -181,13 +177,10 @@ class ElectricityControllerTest extends AbstractRestDocsTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.result[0].name").value("본관"))
                 .andExpect(jsonPath("$.result[1].name").value("60주년기념관"))
+                .andExpect(jsonPath("$.result[0].usagesList[0].usages[11].prediction").value(100))
                 .andExpect(jsonPath("$.result[1].usagesList.length()").value(2))
                 .andExpect(jsonPath("$.result[1].usagesList[0].year").value(2017))
-                .andExpect(jsonPath("$.result[1].usagesList[0].usages[0].data").value(1))
-                .andExpect(jsonPath("$.result[1].usagesList[0].usages[0].prediction").value(false))
-                .andExpect(jsonPath("$.result[1].usagesList[1].usages[8].data").value(9))
-                .andExpect(jsonPath("$.result[1].usagesList[1].usages[8].prediction").value(true))
-                .andDo(print())
+                .andExpect(jsonPath("$.result[1].usagesList[1].usages[11].data").value(24))
                 .andDo(document("{class-name}/{method-name}",
                         preprocessRequest(prettyPrint()),
                         preprocessResponse(prettyPrint()),
@@ -197,8 +190,10 @@ class ElectricityControllerTest extends AbstractRestDocsTest {
                                 fieldWithPath("result[].usagesList").description("사용량 데이터"),
                                 fieldWithPath("result[].usagesList[].year").description("해당 사용량 데이터의 년도"),
                                 fieldWithPath("result[].usagesList[].usages").description("월별 사용량(1월-12월)"),
-                                fieldWithPath("result[].usagesList[].usages[].data").description("사용량"),
-                                fieldWithPath("result[].usagesList[].usages[].prediction").description("예측값: true, 실측값: false")
+                                fieldWithPath("result[].usagesList[].usages[].data").type(JsonFieldType.NUMBER)
+                                        .description("실 사용량. null이면 실 사용량 없음").optional(),
+                                fieldWithPath("result[].usagesList[].usages[].prediction").type(JsonFieldType.NUMBER)
+                                        .description("예측 사용량. null이면 실 사용량이 있거나 예측 사용량이 없음").optional()
                         )
                 ));
 

@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -54,14 +55,6 @@ class GasControllerTest extends AbstractRestDocsTest {
 
         for (int i = 1; i < 13; i++) {
             gasRepository.save(Gas.builder().
-                    recordedAt(LocalDate.of(2021, i, 1))
-                    .usages(2 * i)
-                    .prediction(false)
-                    .building(building)
-                    .build());
-        }
-        for (int i = 1; i < 10; i++) {
-            gasRepository.save(Gas.builder().
                     recordedAt(LocalDate.of(2022, i, 1))
                     .usages(i)
                     .prediction(false)
@@ -70,9 +63,8 @@ class GasControllerTest extends AbstractRestDocsTest {
         }
         for (int i = 10; i < 13; i++) { //2022.10 부터 예측값
             gasRepository.save(Gas.builder().
-                    recordedAt(LocalDate.of(2022, i, 1))
-                    .usages(i)
-                    .prediction(true)
+                    recordedAt(LocalDate.of(2021, i, 1))
+                    .usages(2 * i)
                     .building(building)
                     .build());
         }
@@ -88,18 +80,10 @@ class GasControllerTest extends AbstractRestDocsTest {
         result.andExpect(status().isOk())
                 .andExpect(jsonPath("$.result[0].year").value(2021))
                 .andExpect(jsonPath("$.result[0].usages[0].data").value(2))
-                .andExpect(jsonPath("$.result[0].usages[0].prediction").value(false))
                 .andExpect(jsonPath("$.result[0].usages[11].data").value(24))
-                .andExpect(jsonPath("$.result[0].usages[11].prediction").value(false))
                 .andExpect(jsonPath("$.result[1].year").value(2022))
                 .andExpect(jsonPath("$.result[1].usages[0].data").value(1))
-                .andExpect(jsonPath("$.result[1].usages[0].prediction").value(false))
-                .andExpect(jsonPath("$.result[1].usages[8].data").value(9))
-                .andExpect(jsonPath("$.result[1].usages[8].prediction").value(false))
-                .andExpect(jsonPath("$.result[1].usages[9].data").value(10))
-                .andExpect(jsonPath("$.result[1].usages[9].prediction").value(true))
-                .andExpect(jsonPath("$.result[1].usages[11].data").value(12))
-                .andExpect(jsonPath("$.result[1].usages[11].prediction").value(true));
+                .andExpect(jsonPath("$.result[1].usages[11].data").value(12));
 
         //docs
         result.andDo(print())
@@ -111,8 +95,10 @@ class GasControllerTest extends AbstractRestDocsTest {
                                 fieldWithPath("result").description("결과 반환"),
                                 fieldWithPath("result[].year").description("년도"),
                                 fieldWithPath("result[].usages").description("해당 년도에 따른 월별 사용량 집합(1월-12월)"),
-                                fieldWithPath("result[].usages[].data").description("사용량"),
-                                fieldWithPath("result[].usages[].prediction").description("예측값: true, 실측값: false")
+                                fieldWithPath("result[].usages[].data").type(JsonFieldType.NUMBER)
+                                        .description("실 사용량. null인 경우, 실측 사용량이 없음").optional(),
+                                fieldWithPath("result[].usages[].prediction").type(JsonFieldType.NUMBER)
+                                        .description("예측 사용량. null인 경우, 실측값이 존재하거나 예측 사용량이 없음").optional()
                         )
                 ));
     }
@@ -176,8 +162,10 @@ class GasControllerTest extends AbstractRestDocsTest {
                                 fieldWithPath("result[].usagesList").description("사용량 데이터"),
                                 fieldWithPath("result[].usagesList[].year").description("해당 사용량 데이터의 년도"),
                                 fieldWithPath("result[].usagesList[].usages").description("월별 사용량(1월-12월)"),
-                                fieldWithPath("result[].usagesList[].usages[].data").description("사용량"),
-                                fieldWithPath("result[].usagesList[].usages[].prediction").description("예측값: true, 실측값: false")
+                                fieldWithPath("result[].usagesList[].usages[].data").type(JsonFieldType.NUMBER)
+                                        .description("실 사용량. null인 경우, 실측 사용량이 없음").optional(),
+                                fieldWithPath("result[].usagesList[].usages[].prediction").type(JsonFieldType.NUMBER)
+                                        .description("예측 사용량. null인 경우, 실측값이 존재하거나 예측 사용량이 없음").optional()
                         )
                 ));
     }

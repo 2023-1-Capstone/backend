@@ -46,21 +46,18 @@ class GasServiceTest {
             gasRepository.save(Gas.builder().
                     recordedAt(LocalDate.of(2022, i, 1))
                     .usages(i)
-                    .prediction((i % 3 == 0))
                     .building(building)
                     .build());
             gasRepository.save(Gas.builder().
                     recordedAt(LocalDate.of(2021, i, 1))
                     .usages(2 * i)
-                    .prediction((i % 2 == 0))
                     .building(building)
                     .build());
         }
         gasRepository.save(Gas.builder()
                 .recordedAt(LocalDate.of(2021, 1, 1))
-                .usages(52349)
+                .prediction(52349)
                 .building(building)
-                .prediction(true)
                 .build()); // 이 값이 반영되면 안된다.
     }
 
@@ -77,9 +74,9 @@ class GasServiceTest {
         assertThat(result.getResult().get(0).getUsages().length).isEqualTo(12);
         for (int i = 0; i < 12; i++) {
             assertThat(result.getResult().get(0).getUsages()[i].getData()).isEqualTo(2 * (i + 1));
-            assertThat(result.getResult().get(0).getUsages()[i].isPrediction()).isEqualTo( (i + 1) % 2 == 0 );
+            assertThat(result.getResult().get(0).getUsages()[i].getPrediction()).isEqualTo( null);
             assertThat(result.getResult().get(1).getUsages()[i].getData()).isEqualTo(i + 1);
-            assertThat(result.getResult().get(1).getUsages()[i].isPrediction()).isEqualTo( (i + 1) % 3 == 0 );
+            assertThat(result.getResult().get(1).getUsages()[i].getPrediction()).isEqualTo( null);
         }
     }
 
@@ -111,7 +108,7 @@ class GasServiceTest {
 
             IntStream.range(0, 12).forEach(j -> {
                 assertThat(result.get(0).getUsagesList().get(i).getUsages()[j].getData()).isEqualTo((j + 1) * (2 - i));
-                assertThat(result.get(0).getUsagesList().get(i).getUsages()[j].isPrediction()).isEqualTo( (j + 1) % (2 + i) == 0);
+                assertThat(result.get(0).getUsagesList().get(i).getUsages()[j].getPrediction()).isEqualTo( null);
             });
         });
     }

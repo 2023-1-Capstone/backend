@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -91,8 +92,10 @@ class GasControllerTest extends AbstractRestDocsTest {
                                 fieldWithPath("result").description("결과 반환"),
                                 fieldWithPath("result[].year").description("년도"),
                                 fieldWithPath("result[].usages").description("해당 년도에 따른 월별 사용량 집합(1월-12월)"),
-                                fieldWithPath("result[].usages[].data").description("사용량"),
-                                fieldWithPath("result[].usages[].prediction").description("예측값: true, 실측값: false")
+                                fieldWithPath("result[].usages[].data").type(JsonFieldType.NUMBER)
+                                        .description("실 사용량. null인 경우, 실측 사용량이 없음").optional(),
+                                fieldWithPath("result[].usages[].prediction").type(JsonFieldType.NUMBER)
+                                        .description("예측 사용량. null인 경우, 실측값이 존재하거나 예측 사용량이 없음").optional()
                         )
                 ));
     }
@@ -152,8 +155,10 @@ class GasControllerTest extends AbstractRestDocsTest {
                                 fieldWithPath("result[].usagesList").description("사용량 데이터"),
                                 fieldWithPath("result[].usagesList[].year").description("해당 사용량 데이터의 년도"),
                                 fieldWithPath("result[].usagesList[].usages").description("월별 사용량(1월-12월)"),
-                                fieldWithPath("result[].usagesList[].usages[].data").description("사용량"),
-                                fieldWithPath("result[].usagesList[].usages[].prediction").description("예측값: true, 실측값: false")
+                                fieldWithPath("result[].usagesList[].usages[].data").type(JsonFieldType.NUMBER)
+                                        .description("실 사용량. null인 경우, 실측 사용량이 없음").optional(),
+                                fieldWithPath("result[].usagesList[].usages[].prediction").type(JsonFieldType.NUMBER)
+                                        .description("예측 사용량. null인 경우, 실측값이 존재하거나 예측 사용량이 없음").optional()
                         )
                 ));
     }

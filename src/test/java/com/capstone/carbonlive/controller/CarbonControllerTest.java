@@ -72,7 +72,6 @@ class CarbonControllerTest extends AbstractRestDocsTest {
         UsagePredictionResponse[] usages1 = new UsagePredictionResponse[12];
         IntStream.range(0, 12).forEach(i -> usages1[i] = UsagePredictionResponse.builder()
                 .data(i + 1)
-                .prediction(false)
                 .build()
         );
         ArrayList<UsageResponse> list = new ArrayList<>();

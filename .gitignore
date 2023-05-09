@@ -37,8 +37,11 @@ out/
 .vscode/
 
 ### Rest Docs ###
-/src/main/resources/static/docs
+/src/main/resources/static/docs/index.html
 /src/docs/asciidoc/index.html
 
 ### docker ###
 Dockerfile
+
+### application.properties ###
+/src/main/resources/application.properties

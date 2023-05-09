@@ -1,12 +1,11 @@
 package com.capstone.carbonlive.service;
 
-import com.capstone.carbonlive.dto.SeasonResponse;
-import com.capstone.carbonlive.dto.UsageResponse;
-import com.capstone.carbonlive.dto.UsageResult;
-import com.capstone.carbonlive.dto.UsageWithNameResponse;
+import com.capstone.carbonlive.dto.*;
 import com.capstone.carbonlive.entity.Building;
 import com.capstone.carbonlive.entity.Electricity;
+import com.capstone.carbonlive.entity.ElectricityFee;
 import com.capstone.carbonlive.repository.BuildingRepository;
+import com.capstone.carbonlive.repository.ElectricityFeeRepository;
 import com.capstone.carbonlive.repository.ElectricityRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -16,14 +15,15 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.capstone.carbonlive.service.common.GetUsageResult.getBuildingUsageResult;
-import static com.capstone.carbonlive.service.common.GetUsageResult.getSeasonUsageResult;
+import static com.capstone.carbonlive.service.common.GetUsageResult.*;
 
 @Service
 @RequiredArgsConstructor
 public class ElectricityServiceImpl implements ElectricityService {
+
     private final ElectricityRepository electricityRepository;
     private final BuildingRepository buildingRepository;
+    private final ElectricityFeeRepository electricityFeeRepository;
 
     /**
      * 건물별 전기 사용량
@@ -32,10 +32,9 @@ public class ElectricityServiceImpl implements ElectricityService {
     public UsageResult<UsageResponse> getEachAll(Long id) {
         Building building = buildingRepository.findById(id).orElseThrow(EntityNotFoundException::new);
 
-        List<Electricity> electricityList = electricityRepository.findAllByBuilding(building,
-                Sort.by("recordedAt").ascending().and(Sort.by("prediction").descending()));
-
-        return getBuildingUsageResult(electricityList);
+        return getBuildingUsageResult(electricityRepository.findAllByBuilding(building,
+                Sort.by("recordedAt").ascending().
+                        and(Sort.by("prediction").descending())));
     }
 
     /**
@@ -43,9 +42,7 @@ public class ElectricityServiceImpl implements ElectricityService {
      */
     @Override
     public UsageResult<SeasonResponse> getSeasonData() {
-        List<Electricity> electricityList = electricityRepository.findAll(Sort.by("recordedAt").ascending());
-
-        return getSeasonUsageResult(electricityList);
+        return getSeasonUsageResult(electricityRepository.findAll(Sort.by("recordedAt").ascending()));
     }
 
     @Override
@@ -62,5 +59,13 @@ public class ElectricityServiceImpl implements ElectricityService {
         }
 
         return result;
+    }
+
+    /**
+     * 월별 단위 전기 사용요금
+     */
+    @Override
+    public UsageResult<FeeResponse> getFee() {
+        return getUsageFeeResult(electricityFeeRepository.findAll(Sort.by("recordedAt").ascending()));
     }
 }

@@ -16,10 +16,13 @@ public class Water extends BaseEntity{
     @Column(name = "WATER_ID")
     private Long id;
 
+    private Integer fee;
+
     @Builder(toBuilder = true)
-    public Water(LocalDate recordedAt, Integer usages, Integer prediction){
+    public Water(LocalDate recordedAt, Integer usages, Integer prediction, Integer fee){
         this.recordedAt = recordedAt;
         this.usages = usages;
         this.prediction = prediction;
+        this.fee = fee;
     }
 }

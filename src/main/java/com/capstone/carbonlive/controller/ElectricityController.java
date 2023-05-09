@@ -1,9 +1,6 @@
 package com.capstone.carbonlive.controller;
 
-import com.capstone.carbonlive.dto.SeasonResponse;
-import com.capstone.carbonlive.dto.UsageResponse;
-import com.capstone.carbonlive.dto.UsageResult;
-import com.capstone.carbonlive.dto.UsageWithNameResponse;
+import com.capstone.carbonlive.dto.*;
 import com.capstone.carbonlive.service.ElectricityService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -35,5 +32,10 @@ public class ElectricityController {
     public UsageResult<UsageWithNameResponse> getElectricityAll(){
         UsageResult<UsageWithNameResponse> result = electricityService.getAll();
         return result;
+    }
+
+    @GetMapping("/fee")
+    public ResponseEntity<UsageResult<FeeResponse>> getElectricityFee() {
+        return ResponseEntity.ok(electricityService.getFee());
     }
 }

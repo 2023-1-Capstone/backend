@@ -83,3 +83,18 @@ include::{snippets}/carbon-controller-test/get-year-usages/http-request.adoc[]
 .response
 include::{snippets}/carbon-controller-test/get-year-usages/http-response.adoc[]
 include::{snippets}/carbon-controller-test/get-year-usages/response-fields.adoc[]
+
+== 사용요금
+=== 월별 단위 전기 사용요금
+.request
+include::{snippets}/electricity-controller-test/find-electricity-fee/http-request.adoc[]
+.response
+include::{snippets}/electricity-controller-test/find-electricity-fee/http-response.adoc[]
+include::{snippets}/electricity-controller-test/find-electricity-fee/response-fields.adoc[]
+
+=== 월별 단위 가스 사용요금
+.request
+include::{snippets}/gas-controller-test/find-gas-fee/http-request.adoc[]
+.response
+include::{snippets}/gas-controller-test/find-gas-fee/http-response.adoc[]
+include::{snippets}/gas-controller-test/find-gas-fee/response-fields.adoc[]

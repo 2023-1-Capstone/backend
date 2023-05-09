@@ -34,6 +34,7 @@ public class Gas extends BaseEntity{
                 "recordedAt=" + recordedAt +
                 ", usages=" + usages +
                 ", id=" + id +
+                ", prediction=" + prediction +
                 '}';
     }
 }

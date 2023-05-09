@@ -1,12 +1,11 @@
 package com.capstone.carbonlive.service;
 
-import com.capstone.carbonlive.dto.SeasonResponse;
-import com.capstone.carbonlive.dto.UsageResponse;
-import com.capstone.carbonlive.dto.UsageResult;
-import com.capstone.carbonlive.dto.UsageWithNameResponse;
+import com.capstone.carbonlive.dto.*;
 import com.capstone.carbonlive.entity.Building;
 import com.capstone.carbonlive.entity.Gas;
+import com.capstone.carbonlive.entity.GasFee;
 import com.capstone.carbonlive.repository.BuildingRepository;
+import com.capstone.carbonlive.repository.GasFeeRepository;
 import com.capstone.carbonlive.repository.GasRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -18,7 +17,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
-import java.util.stream.IntStream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -29,7 +27,7 @@ class GasServiceTest {
     @Autowired BuildingRepository buildingRepository;
     @Autowired GasRepository gasRepository;
     @Autowired GasService gasService;
-
+    @Autowired GasFeeRepository gasFeeRepository;
 
     @BeforeEach
     public void beforeEach() {
@@ -42,25 +40,30 @@ class GasServiceTest {
                 .build();
         buildingRepository.save(building);
 
+        //2018-01 부터 2019-09 까지 실제값
         for (int i = 1; i < 13; i++) {
             gasRepository.save(Gas.builder().
-                    recordedAt(LocalDate.of(2022, i, 1))
+                    recordedAt(LocalDate.of(2018, i, 1))
                     .usages(i)
-                    .prediction((i % 3 == 0))
-                    .building(building)
-                    .build());
-            gasRepository.save(Gas.builder().
-                    recordedAt(LocalDate.of(2021, i, 1))
-                    .usages(2 * i)
-                    .prediction((i % 2 == 0))
                     .building(building)
                     .build());
         }
-        gasRepository.save(Gas.builder()
-                .recordedAt(LocalDate.of(2021, 1, 1))
-                .prediction(52349)
-                .building(building)
-                .build()); // 이 값이 반영되면 안된다.
+        for (int i = 1; i < 10; i++) {
+            gasRepository.save(Gas.builder().
+                    recordedAt(LocalDate.of(2019, i, 1))
+                    .usages(i)
+                    .building(building)
+                    .build());
+        }
+
+        //2019-10 부터 2019-12 까지 예측값
+        for (int i = 10; i < 13; i++) {
+            gasRepository.save(Gas.builder()
+                    .recordedAt(LocalDate.of(2019, i, 1))
+                    .prediction(i)
+                    .building(building)
+                    .build());
+        }
     }
 
     @Test
@@ -72,13 +75,19 @@ class GasServiceTest {
 
         //then
         System.out.println("result = " + result);
-        assertThat(result.getResult().get(0).getYear()).isEqualTo(2021);
-        assertThat(result.getResult().get(0).getUsages().length).isEqualTo(12);
+        assertThat(result.getResult().get(0).getYear()).isEqualTo(2018);
+        assertThat(result.getResult().get(1).getYear()).isEqualTo(2019);
         for (int i = 0; i < 12; i++) {
-            assertThat(result.getResult().get(0).getUsages()[i].getData()).isEqualTo(2 * (i + 1));
-            assertThat(result.getResult().get(0).getUsages()[i].getPrediction()).isEqualTo( null);
+            assertThat(result.getResult().get(0).getUsages()[i].getData()).isEqualTo(i + 1);
+            assertThat(result.getResult().get(0).getUsages()[i].getPrediction()).isEqualTo(null);
+        }
+        for (int i = 0; i < 9; i++) {
             assertThat(result.getResult().get(1).getUsages()[i].getData()).isEqualTo(i + 1);
-            assertThat(result.getResult().get(1).getUsages()[i].getPrediction()).isEqualTo( null);
+            assertThat(result.getResult().get(1).getUsages()[i].getPrediction()).isEqualTo(null);
+        }
+        for (int i = 9; i < 12; i++) {
+            assertThat(result.getResult().get(1).getUsages()[i].getData()).isEqualTo(null);
+            assertThat(result.getResult().get(1).getUsages()[i].getPrediction()).isEqualTo(i + 1);
         }
     }
 
@@ -90,8 +99,16 @@ class GasServiceTest {
 
         //then
         System.out.println("result = " + result);
-        assertThat(result.getResult().get(0).getUsages()[0]).isEqualTo(0);
-        assertThat(result.getResult().get(1).getUsages()[0]).isEqualTo(0);
+        assertThat(result.getResult().get(0).getStartYear()).isEqualTo(2018);
+        assertThat(result.getResult().get(0).getEndYear()).isEqualTo(2019);
+        assertThat(result.getResult().get(0).getUsages()[0]).isEqualTo(12);
+        assertThat(result.getResult().get(0).getUsages()[1]).isEqualTo(21);
+        assertThat(result.getResult().get(0).getUsages()[2]).isEqualTo(30);
+        assertThat(result.getResult().get(0).getUsages()[3]).isEqualTo(15);
+        assertThat(result.getResult().get(1).getStartYear()).isEqualTo(2019);
+        assertThat(result.getResult().get(1).getEndYear()).isEqualTo(2020);
+        assertThat(result.getResult().get(1).getUsages()[2]).isEqualTo(0);
+        assertThat(result.getResult().get(1).getUsages()[3]).isEqualTo(0);
     }
 
     @Test
@@ -101,17 +118,54 @@ class GasServiceTest {
         UsageResult<UsageWithNameResponse> usageResult = gasService.findAll();
         List<UsageWithNameResponse> result = usageResult.getResult();
 
-        System.out.println("result = " + result);
         // then
+        System.out.println("result = " + result);
         assertThat(result.get(0).getName()).isEqualTo("building1");
+        assertThat(result.get(0).getUsagesList().get(0).getYear()).isEqualTo(2018);
+        assertThat(result.get(0).getUsagesList().get(1).getYear()).isEqualTo(2019);
+        for (int i = 0; i < 12; i++) {
+            assertThat(result.get(0).getUsagesList().get(0).getUsages()[i].getData()).isEqualTo(i + 1);
+            assertThat(result.get(0).getUsagesList().get(0).getUsages()[i].getPrediction()).isEqualTo(null);
+        }
+        for (int i = 0; i < 9; i++) {
+            assertThat(result.get(0).getUsagesList().get(1).getUsages()[i].getData()).isEqualTo(i + 1);
+            assertThat(result.get(0).getUsagesList().get(1).getUsages()[i].getPrediction()).isEqualTo(null);
+        }
+        for (int i = 9; i < 12; i++) {
+            assertThat(result.get(0).getUsagesList().get(1).getUsages()[i].getData()).isEqualTo(null);
+            assertThat(result.get(0).getUsagesList().get(1).getUsages()[i].getPrediction()).isEqualTo(i + 1);
+        }
+    }
 
-        IntStream.range(0, 2).forEach(i -> {
-            assertThat(result.get(0).getUsagesList().get(i).getYear()).isEqualTo(2021 + i);
+    @Test
+    @DisplayName("월별 단위 가스 사용요금 출력")
+    public void findFee() throws Exception {
+        //given
+        for (int i = 1; i < 13; i++) {
+            gasFeeRepository.save(GasFee.builder()
+                    .recordedAt(LocalDate.of(2018, i, 1))
+                    .usages(i)
+                    .fee(i)
+                    .build());
+            gasFeeRepository.save(GasFee.builder()
+                    .recordedAt(LocalDate.of(2019, i, 1))
+                    .usages(i)
+                    .fee(i)
+                    .build());
+        }
 
-            IntStream.range(0, 12).forEach(j -> {
-                assertThat(result.get(0).getUsagesList().get(i).getUsages()[j].getData()).isEqualTo((j + 1) * (2 - i));
-                assertThat(result.get(0).getUsagesList().get(i).getUsages()[j].getPrediction()).isEqualTo( null);
-            });
-        });
+        //when
+        UsageResult<FeeResponse> result = gasService.findFee();
+
+        //then
+        System.out.println("result = " + result);
+        assertThat(result.getResult().get(0).getYear()).isEqualTo(2018);
+        assertThat(result.getResult().get(1).getYear()).isEqualTo(2019);
+        for (int i = 0; i < 2; i++) {
+            for (int j = 0; j < 12; j++) {
+                assertThat(result.getResult().get(i).getFeeResponses()[j].getUsages()).isEqualTo(j + 1);
+                assertThat(result.getResult().get(i).getFeeResponses()[j].getFee()).isEqualTo(j + 1);
+            }
+        }
     }
 }

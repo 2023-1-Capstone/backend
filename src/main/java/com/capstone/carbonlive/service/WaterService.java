@@ -1,8 +1,8 @@
 package com.capstone.carbonlive.service;
 
-import com.capstone.carbonlive.dto.UsageResponse;
 import com.capstone.carbonlive.dto.UsageResult;
+import com.capstone.carbonlive.dto.WaterResponse;
 
 public interface WaterService {
-    UsageResult<UsageResponse> getAll();
+    UsageResult<WaterResponse> getAll();
 }

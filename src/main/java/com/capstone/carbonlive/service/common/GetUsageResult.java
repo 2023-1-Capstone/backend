@@ -1,10 +1,9 @@
 package com.capstone.carbonlive.service.common;
 
-import com.capstone.carbonlive.dto.SeasonResponse;
-import com.capstone.carbonlive.dto.UsagePredictionResponse;
-import com.capstone.carbonlive.dto.UsageResponse;
-import com.capstone.carbonlive.dto.UsageResult;
+import com.capstone.carbonlive.dto.*;
 import com.capstone.carbonlive.entity.BaseEntity;
+import com.capstone.carbonlive.entity.FeeBaseEntity;
+import com.capstone.carbonlive.entity.Water;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -51,6 +50,69 @@ public class GetUsageResult {
         result.getResult().add(usageResponse);
     }
 
+    public static UsageResult<WaterResponse> getWaterResult(List<Water> ascDataList) {
+        UsageResult<WaterResponse> result = new UsageResult<>(new ArrayList<>());
+
+        List<Integer> yearList = new ArrayList<>();
+        for (Water data : ascDataList) {
+            int curYear = data.getRecordedAt().getYear();
+            if (!yearList.contains(curYear))
+                yearList.add(curYear);
+        }
+
+        for (int year : yearList) {
+            WaterPredictionFeeResponse[] usages = new WaterPredictionFeeResponse[12];
+
+            for (Water data : ascDataList) {
+                if (data.getRecordedAt().getYear() == year) {
+                    WaterPredictionFeeResponse feeResponse = WaterPredictionFeeResponse.builder()
+                            .data(data.getUsages())
+                            .prediction(data.getPrediction())
+                            .fee(data.getFee())
+                            .build();
+
+                    int month = data.getRecordedAt().getMonth().getValue();
+                    usages[month - 1] = feeResponse;
+                }
+            }
+
+            result.add(new WaterResponse(year, usages));
+        }
+
+        return result;
+    }
+
+    public static <T extends FeeBaseEntity> UsageResult<FeeResponse> getUsageFeeResult(List<T> ascDataList) {
+        UsageResult<FeeResponse> result = new UsageResult<>(new ArrayList<>());
+
+        List<Integer> yearList = new ArrayList<>();
+        for (T data : ascDataList) {
+            int curYear = data.getRecordedAt().getYear();
+            if (!yearList.contains(curYear))
+                yearList.add(curYear);
+        }
+
+        for (Integer year : yearList) {
+            UsageFeeResponse[] usages = new UsageFeeResponse[12];
+
+            for (T data : ascDataList) {
+                if (data.getRecordedAt().getYear() == year) {
+                    UsageFeeResponse feeResponse = UsageFeeResponse.builder()
+                            .usages(data.getUsages())
+                            .fee(data.getFee())
+                            .build();
+
+                    int month = data.getRecordedAt().getMonth().getValue();
+                    usages[month - 1] = feeResponse;
+                }
+            }
+
+            result.add(new FeeResponse(year, usages));
+        }
+
+        return result;
+    }
+
     public static <T extends BaseEntity> UsageResult<SeasonResponse> getSeasonUsageResult(List<T> ascDataList) {
         UsageResult<SeasonResponse> result = new UsageResult<>(new ArrayList<>());
 
@@ -82,19 +144,19 @@ public class GetUsageResult {
                 int month = data.getRecordedAt().getMonth().getValue();
                 switch (month / 3) {
                     case 1:     //3,4,5월
-                        if (data.isPrediction()) isPrediction[0] = true;
+                        if (data.getPrediction() != null || data.getUsages() == null) isPrediction[0] = true;
                         else seasonResponse.getUsages()[0] += data.getUsages();
                         break;
                     case 2:     //6,7,8월
-                        if (data.isPrediction()) isPrediction[1] = true;
+                        if (data.getPrediction() != null || data.getUsages() == null) isPrediction[1] = true;
                         else seasonResponse.getUsages()[1] += data.getUsages();
                         break;
                     case 3:     //9,10,11월
-                        if (data.isPrediction()) isPrediction[2] = true;
+                        if (data.getPrediction() != null || data.getUsages() == null) isPrediction[2] = true;
                         else seasonResponse.getUsages()[2] += data.getUsages();
                         break;
                     case 4:    //12월
-                        if (data.isPrediction()) isPrediction[3] = true;
+                        if (data.getPrediction() != null || data.getUsages() == null) isPrediction[3] = true;
                         else seasonResponse.getUsages()[3] += data.getUsages();
                         break;
                 }
@@ -103,12 +165,11 @@ public class GetUsageResult {
             else if (data.getRecordedAt().getYear() == seasonResponse.getEndYear()) {
                 int month = data.getRecordedAt().getMonth().getValue();
                 if (month == 1 || month == 2) {
-                    if (data.isPrediction()) isPrediction[3] = true;
+                    if (data.getPrediction() != null || data.getUsages() == null) isPrediction[3] = true;
                     else seasonResponse.getUsages()[3] += data.getUsages();
                 }
             }
         }
-        System.out.println("seasonResponse = " + seasonResponse);
         //데이터가 하나라도 부족하면 0으로 처리
         for (int i = 0; i < 4; i++) {
             if (isPrediction[i]) {

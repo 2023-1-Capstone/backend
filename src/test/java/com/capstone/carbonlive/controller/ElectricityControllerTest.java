@@ -40,18 +40,22 @@ class ElectricityControllerTest extends AbstractRestDocsTest {
     void getElectricityEach() throws Exception {
         ArrayList<UsageResponse> list = new ArrayList<>();
 
+        // 2018-01 부터 2019-09 까지 실제값
         UsageResponse response1 = new UsageResponse();
         response1.setYear(2018);
         IntStream.range(0, 12).forEach(i ->
                 response1.getUsages()[i] = UsagePredictionResponse.builder().data(i + 1).build()
         );
-
         UsageResponse response2 = new UsageResponse();
         response2.setYear(2019);
-        IntStream.range(0, 12).forEach(i ->
+        IntStream.range(0, 9).forEach(i ->
                 response2.getUsages()[i] = UsagePredictionResponse.builder().data(i + 1).build()
         );
-        response2.getUsages()[11].setData(16);
+
+        // 2019-10 부터 2019-12 까지 예측값
+        IntStream.range(9, 12).forEach(i ->
+                response2.getUsages()[i] = UsagePredictionResponse.builder().prediction(i + 1).build()
+        );
 
         list.add(response1);
         list.add(response2);
@@ -66,9 +70,12 @@ class ElectricityControllerTest extends AbstractRestDocsTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.result[0].year").value(2018))
                 .andExpect(jsonPath("$.result[0].usages[11].data").value(12))
+                .andExpect(jsonPath("$.result[0].usages[11].prediction", nullValue()))
                 .andExpect(jsonPath("$.result[1].year").value(2019))
-                .andExpect(jsonPath("$.result[1].usages[11].data").value(16))
-                .andExpect(jsonPath("$.result[1].usages[11].prediction", nullValue()))
+                .andExpect(jsonPath("$.result[1].usages[8].data").value(9))
+                .andExpect(jsonPath("$.result[1].usages[8].prediction", nullValue()))
+                .andExpect(jsonPath("$.result[1].usages[9].data", nullValue()))
+                .andExpect(jsonPath("$.result[1].usages[9].prediction").value(10))
                 .andDo(print())
                 .andDo(document("{class-name}/{method-name}",
                         preprocessRequest(prettyPrint()),
@@ -171,6 +178,7 @@ class ElectricityControllerTest extends AbstractRestDocsTest {
         System.out.println("result = " + result);
         given(electricityService.getAll())
                 .willReturn(result);
+
         // when
         this.mockMvc.perform(get(uri + "/area")
                             .contentType(MediaType.APPLICATION_JSON))
@@ -199,5 +207,52 @@ class ElectricityControllerTest extends AbstractRestDocsTest {
 
         // then
         then(electricityService).should(times(1)).getAll();
+    }
+
+    @Test
+    @DisplayName("월별 단위 전기 사용요금 받아오기")
+    public void findElectricityFee() throws Exception {
+        //given
+        UsageResult<FeeResponse> result = new UsageResult<>(new ArrayList<>());
+
+        FeeResponse response = new FeeResponse(2018);
+        IntStream.range(0, 12).forEach(i ->
+                response.getFeeResponses()[i] = UsageFeeResponse.builder().usages(i + 1).fee(i + 1).build()
+        );
+        FeeResponse response2 = new FeeResponse(2019);
+        IntStream.range(0, 12).forEach(i ->
+                response2.getFeeResponses()[i] = UsageFeeResponse.builder().usages(i + 1).fee(i + 1).build()
+        );
+
+        result.add(response);
+        result.add(response2);
+
+        System.out.println("result = " + result);
+        given(electricityService.getFee())
+                .willReturn(result);
+
+        //when
+        this.mockMvc.perform(get(uri + "/fee")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.result[0].year").value(2018))
+                .andExpect(jsonPath("$.result[0].feeResponses[0].usages").value(1))
+                .andExpect(jsonPath("$.result[0].feeResponses[0].fee").value(1))
+                .andExpect(jsonPath("$.result[1].year").value(2019))
+                .andExpect(jsonPath("$.result[1].feeResponses[11].usages").value(12))
+                .andExpect(jsonPath("$.result[1].feeResponses[11].fee").value(12))
+                .andDo(document("{class-name}/{method-name}",
+                        preprocessRequest(prettyPrint()),
+                        preprocessResponse(prettyPrint()),
+                        responseFields(fieldWithPath("result").description("결과 반환"),
+                                fieldWithPath("result[].year").description("해당 사용요금 데이터의 년도"),
+                                fieldWithPath("result[].feeResponses").description("사용요금 데이터"),
+                                fieldWithPath("result[].feeResponses[].usages").description("월별 전체 사용량(1월-12월)"),
+                                fieldWithPath("result[].feeResponses[].fee").description("월별 사용요금(1월-12월)")
+                        )
+                ));
+
+        //then
+        then(electricityService).should(times(1)).getFee();
     }
 }

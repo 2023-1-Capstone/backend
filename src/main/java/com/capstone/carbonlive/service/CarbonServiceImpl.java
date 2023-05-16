@@ -63,7 +63,7 @@ public class CarbonServiceImpl implements CarbonService{
 
     @Override
     public UsageResult<UsageWithNameResponse> getAllUsages() {
-        UsageResult<UsageWithNameResponse> result = new UsageResult<UsageWithNameResponse>(new ArrayList<>());
+        UsageResult<UsageWithNameResponse> result = new UsageResult<>(new ArrayList<>());
 
         List<Building> buildings = buildingRepository.findAll();
         for (Building b : buildings){

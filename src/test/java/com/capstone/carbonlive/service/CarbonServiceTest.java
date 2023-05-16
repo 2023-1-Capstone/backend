@@ -3,6 +3,7 @@ package com.capstone.carbonlive.service;
 import com.capstone.carbonlive.dto.CarbonYearResponse;
 import com.capstone.carbonlive.dto.UsageResponse;
 import com.capstone.carbonlive.dto.UsageResult;
+import com.capstone.carbonlive.dto.UsageWithNameResponse;
 import com.capstone.carbonlive.entity.Building;
 import com.capstone.carbonlive.entity.Carbon;
 import com.capstone.carbonlive.repository.BuildingRepository;
@@ -61,7 +62,7 @@ class CarbonServiceTest {
                 .recordedAt(LocalDate.of(2018, 2, 1))
                 .prediction(10023)
                 .building(sampleBuilding)
-                .build(); // 포함되면 안된다.
+                .build();
         carbonList.add(predictionCarbon);
 
         carbonRepository.saveAll(carbonList);
@@ -97,5 +98,24 @@ class CarbonServiceTest {
         assertThat(buildingUsages.get(1).getYear()).isEqualTo(2018);
         assertThat(buildingUsages.get(1).getUsages()[0].getData()).isEqualTo(null);
         assertThat(buildingUsages.get(1).getUsages()[1].getPrediction()).isEqualTo(10023);
+    }
+
+    @Test
+    @DisplayName("전체 탄소 배출량")
+    public void getAllUsages(){
+        // when
+        UsageResult<UsageWithNameResponse> usageResult = carbonService.getAllUsages();
+        List<UsageWithNameResponse> result = usageResult.getResult();
+
+        //then
+        System.out.println("result = " + result);
+        assertThat(result.size()).isEqualTo(1);
+        assertThat(result.get(0).getName()).isEqualTo("본관");
+
+        IntStream.range(2, 8).forEach(i ->
+                assertThat(result.get(0).getUsagesList().get(2).getUsages()[i].getData()).isEqualTo(50 + i + 1));
+        IntStream.range(0, 8).forEach(i ->
+                assertThat(result.get(0).getUsagesList().get(0).getUsages()[i].getPrediction()).isEqualTo(null));
+        assertThat(result.get(0).getUsagesList().get(1).getUsages()[1].getPrediction()).isEqualTo(10023);
     }
 }

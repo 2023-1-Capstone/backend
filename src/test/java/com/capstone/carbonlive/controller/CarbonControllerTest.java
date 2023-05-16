@@ -1,15 +1,15 @@
 package com.capstone.carbonlive.controller;
 
-import com.capstone.carbonlive.dto.CarbonYearResponse;
-import com.capstone.carbonlive.dto.UsagePredictionResponse;
-import com.capstone.carbonlive.dto.UsageResponse;
-import com.capstone.carbonlive.dto.UsageResult;
+import com.capstone.carbonlive.dto.*;
 import com.capstone.carbonlive.restdocs.AbstractRestDocsTest;
 import com.capstone.carbonlive.service.CarbonService;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.restdocs.payload.JsonFieldType;
+import org.springframework.test.web.servlet.ResultActions;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -116,5 +116,65 @@ class CarbonControllerTest extends AbstractRestDocsTest {
 
         then(carbonService).should(times(1)).getBuildingUsages(1L);
 
+    }
+
+    @Test
+    @DisplayName("전체 탄소 배출량")
+    void getAllUsages() throws Exception {
+        UsagePredictionResponse[] usages1 = new UsagePredictionResponse[12];
+        IntStream.range(0, 12).forEach(i -> usages1[i] = UsagePredictionResponse.builder()
+                .data(i + 1)
+                .build()
+        );
+        ArrayList<UsageResponse> list = new ArrayList<>();
+
+        UsageResponse response1 = new UsageResponse();
+        response1.setYear(2018);
+        System.arraycopy(usages1, 0, response1.getUsages(), 0, 12);
+
+        UsageResponse response2 = new UsageResponse();
+        response2.setYear(2019);
+        IntStream.range(0, 12).forEach(i -> response2.getUsages()[i] = UsagePredictionResponse.builder().prediction(i + 1).build());
+
+        list.add(response1);
+        list.add(response2);
+
+        UsageWithNameResponse usageWithNameResponse = new UsageWithNameResponse();
+        usageWithNameResponse.setName("본관");
+        usageWithNameResponse.setUsagesList(list);
+        UsageResult<UsageWithNameResponse> result = new UsageResult<>(new ArrayList<>());
+        result.add(usageWithNameResponse);
+
+        given(carbonService.getAllUsages())
+                .willReturn(result);
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        System.out.println("result = " + objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(result));
+
+        ResultActions resultActions = mockMvc.perform(get(uri + "area"))
+                .andExpect(jsonPath("$.result[0].name").value("본관"));
+        for (int i = 0; i < 12; i++) {
+            resultActions.andExpect(jsonPath("$.result[0].usagesList[0].usages[" + i + "].data").value(i + 1))
+                    .andExpect(jsonPath("$.result[0].usagesList[1].usages[" + i + "].prediction").value(i + 1));
+        }
+        resultActions.andDo(
+                document("{class-name}/{method-name}",
+                    preprocessRequest(prettyPrint()),
+                    preprocessResponse(prettyPrint()),
+                        responseFields(
+                            fieldWithPath("result").description("결과 반환"),
+                            fieldWithPath("result[].name").description("건물명"),
+                            fieldWithPath("result[].usagesList").description("사용량 데이터"),
+                            fieldWithPath("result[].usagesList[].year").description("해당 사용량 데이터의 년도"),
+                            fieldWithPath("result[].usagesList[].usages").description("월별 사용량(1월-12월)"),
+                            fieldWithPath("result[].usagesList[].usages[].data").type(JsonFieldType.NUMBER)
+                                .description("실 사용량. null이면 실 사용량 없음").optional(),
+                            fieldWithPath("result[].usagesList[].usages[].prediction").type(JsonFieldType.NUMBER)
+                                .description("예측 사용량. null이면 실 사용량이 있거나 예측 사용량이 없음").optional()
+                        )
+                )
+        );
+
+        then(carbonService).should(times(1)).getAllUsages();
     }
 }

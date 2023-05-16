@@ -83,6 +83,12 @@ include::{snippets}/carbon-controller-test/get-year-usages/http-request.adoc[]
 .response
 include::{snippets}/carbon-controller-test/get-year-usages/http-response.adoc[]
 include::{snippets}/carbon-controller-test/get-year-usages/response-fields.adoc[]
+=== 전체 탄소 배출량
+.request
+include::{snippets}/carbon-controller-test/get-all-usages/http-request.adoc[]
+.response
+include::{snippets}/carbon-controller-test/get-all-usages/http-response.adoc[]
+include::{snippets}/carbon-controller-test/get-all-usages/response-fields.adoc[]
 
 == 사용요금
 === 월별 단위 전기 사용요금

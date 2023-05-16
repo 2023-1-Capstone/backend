@@ -3,6 +3,7 @@ package com.capstone.carbonlive.controller;
 import com.capstone.carbonlive.dto.CarbonYearResponse;
 import com.capstone.carbonlive.dto.UsageResponse;
 import com.capstone.carbonlive.dto.UsageResult;
+import com.capstone.carbonlive.dto.UsageWithNameResponse;
 import com.capstone.carbonlive.service.CarbonService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -24,5 +25,10 @@ public class CarbonController {
     @GetMapping("/{buildingCode}")
     public ResponseEntity<UsageResult<UsageResponse>> getBuildingUsages(@PathVariable("buildingCode") Long buildingCode ) {
         return ResponseEntity.ok(carbonService.getBuildingUsages(buildingCode));
+    }
+
+    @GetMapping("/area")
+    public ResponseEntity<UsageResult<UsageWithNameResponse>> getAllUsages(){
+        return ResponseEntity.ok(carbonService.getAllUsages());
     }
 }

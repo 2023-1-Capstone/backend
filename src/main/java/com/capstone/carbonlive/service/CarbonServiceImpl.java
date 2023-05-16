@@ -3,6 +3,7 @@ package com.capstone.carbonlive.service;
 import com.capstone.carbonlive.dto.CarbonYearResponse;
 import com.capstone.carbonlive.dto.UsageResponse;
 import com.capstone.carbonlive.dto.UsageResult;
+import com.capstone.carbonlive.dto.UsageWithNameResponse;
 import com.capstone.carbonlive.entity.Building;
 import com.capstone.carbonlive.entity.Carbon;
 import com.capstone.carbonlive.repository.BuildingRepository;
@@ -58,5 +59,21 @@ public class CarbonServiceImpl implements CarbonService{
         List<Carbon> carbonList = carbonRepository.findByBuildingOrderByRecordedAtAscPredictionDesc(building);
 
         return getBuildingUsageResult(carbonList);
+    }
+
+    @Override
+    public UsageResult<UsageWithNameResponse> getAllUsages() {
+        UsageResult<UsageWithNameResponse> result = new UsageResult<>(new ArrayList<>());
+
+        List<Building> buildings = buildingRepository.findAll();
+        for (Building b : buildings){
+            UsageWithNameResponse response = new UsageWithNameResponse();
+            response.setName(b.getName());
+            UsageResult<UsageResponse> buildingUsages = getBuildingUsages(b.getId());
+            response.setUsagesList(buildingUsages.getResult());
+            result.add(response);
+        }
+
+        return result;
     }
 }

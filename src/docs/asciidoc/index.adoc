@@ -77,7 +77,7 @@ include::{snippets}/carbon-controller-test/get-building-usages/path-parameters.a
 .response
 include::{snippets}/carbon-controller-test/get-building-usages/response-body.adoc[]
 include::{snippets}/carbon-controller-test/get-building-usages/response-fields.adoc[]
-=== 년도별 전체 탄소 배출량
+=== 전체 건물의 년도 단위 월별 탄소 배출량
 .request
 include::{snippets}/carbon-controller-test/get-year-usages/http-request.adoc[]
 .response

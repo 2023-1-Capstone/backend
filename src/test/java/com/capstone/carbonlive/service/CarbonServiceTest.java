@@ -69,17 +69,20 @@ class CarbonServiceTest {
     }
 
     @Test
-    @DisplayName("년도 단위 탄소 총 배출량")
+    @DisplayName("년도별 월 탄소 총 배출량")
     void getYearsUsages() {
         UsageResult<CarbonYearResponse> yearsUsagesResult = carbonService.getYearsUsages();
         List<CarbonYearResponse> yearUsages = yearsUsagesResult.getResult();
 
         System.out.println("yearUsages = " + yearUsages);
 
+        assertThat(yearUsages.size()).isEqualTo(2);
         assertThat(yearUsages.get(0).getYear()).isEqualTo(2017);
-        assertThat(yearUsages.get(0).getUsages()).isEqualTo(27);
         assertThat(yearUsages.get(1).getYear()).isEqualTo(2019);
-        assertThat(yearUsages.get(1).getUsages()).isEqualTo(333);
+        assertThat(yearUsages.get(0).getUsages()[6]).isEqualTo(27);
+        IntStream.range(2, 8).forEach(i ->
+                assertThat(yearUsages.get(1).getUsages()[i]).isEqualTo(51 + i)
+        );
     }
 
     @Test

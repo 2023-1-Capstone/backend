@@ -39,27 +39,33 @@ class CarbonControllerTest extends AbstractRestDocsTest {
     @Test
     void getYearUsages() throws Exception {
         List<CarbonYearResponse> responseList = new ArrayList<>();
-        responseList.add(new CarbonYearResponse(2019, 20190));
-        responseList.add(new CarbonYearResponse(2022, 20220));
+        CarbonYearResponse response1 = new CarbonYearResponse(2019);
+        IntStream.range(0, 12).forEach(i -> response1.getUsages()[i] = i);
+        responseList.add(response1);
+        CarbonYearResponse response2 = new CarbonYearResponse(2022);
+        IntStream.range(0, 12).forEach(i -> response2.getUsages()[i] = i * 2);
+        responseList.add(response2);
 
         UsageResult<CarbonYearResponse> result = new UsageResult<>(responseList);
 
         given(carbonService.getYearsUsages())
                 .willReturn(result);
 
-        this.mockMvc.perform(get(uri + "year"))
+        ResultActions resultActions = this.mockMvc.perform(get(uri + "year"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.result[0].year").value(2019))
-                .andExpect(jsonPath("$.result[0].usages").value(20190))
-                .andExpect(jsonPath("$.result[1].year").value(2022))
-                .andExpect(jsonPath("$.result[1].usages").value(20220))
-                .andDo(document("{class-name}/{method-name}",
+                .andExpect(jsonPath("$.result[1].year").value(2022));
+        for (int i = 0; i < 12; i++){
+                    resultActions.andExpect(jsonPath("$.result[0].usages[" + i + "]").value(i))
+                            .andExpect(jsonPath("$.result[1].usages[" + i + "]").value(i * 2));
+                }
+                resultActions.andDo(document("{class-name}/{method-name}",
                         preprocessRequest(prettyPrint()),
                         preprocessResponse(prettyPrint()),
                         responseFields(
                                 fieldWithPath("result").description("결과 반환"),
                                 fieldWithPath("result[].year").description("년도"),
-                                fieldWithPath("result[].usages").description("해당 년도의 총 탄소 배출량")
+                                fieldWithPath("result[].usages[]").description("해당 년도의 월별 총 탄소 배출량")
                         ))
                 );
 

@@ -26,30 +26,41 @@ public class CarbonServiceImpl implements CarbonService{
     @Override
     public UsageResult<CarbonYearResponse> getYearsUsages() {
         UsageResult<CarbonYearResponse> result = new UsageResult<>(new ArrayList<>());
-        List<Carbon> carbonList = carbonRepository.findAll(Sort.by("recordedAt").ascending()
-                .and(Sort.by("prediction").descending()));
-        int year = -1, usages = 0;
+        List<Carbon> carbonList = carbonRepository.findAll(Sort.by("recordedAt").ascending());
+        int year = -1;
+        int[] usages = new int[12];
         for (Carbon c : carbonList){
-            if (c.getUsages() == null)
-                continue;
-
-            if (c.getRecordedAt().getYear() != year){
-                CarbonYearResponse carbonYearResponse = new CarbonYearResponse(year, usages);
-                result.add(carbonYearResponse);
+            if (year == -1)
                 year = c.getRecordedAt().getYear();
-                usages = c.getUsages();
+
+            if (year < c.getRecordedAt().getYear()){
+                insertYearResponse(result, year, usages);
+                year = c.getRecordedAt().getYear();
             }
-            else{
-                usages += c.getUsages();
-            }
+
+            int cIdx = c.getRecordedAt().getMonth().getValue() - 1;
+
+            if (c.getUsages() != null)
+                usages[cIdx] = c.getUsages();
         }
-        if (year > 0){
-            CarbonYearResponse carbonYearResponse = new CarbonYearResponse(year, usages);
-            result.add(carbonYearResponse);
+        if (year != -1){
+            insertYearResponse(result, year, usages);
         }
-        result.getResult().remove(0); // 최초 year = -1 인 부분 삭제.
 
         return result;
+    }
+
+    private static void insertYearResponse(UsageResult<CarbonYearResponse> result, int year, int[] usages) {
+        int checkingIfUsagesSumIsZero = 0;
+        CarbonYearResponse yearResponse = new CarbonYearResponse(year);
+        for (int i = 0; i < 12; i++){
+            yearResponse.getUsages()[i] = usages[i];
+            checkingIfUsagesSumIsZero += usages[i];
+            usages[i] = 0;
+        }
+        if (checkingIfUsagesSumIsZero == 0)
+            return;
+        result.add(yearResponse);
     }
 
     @Override

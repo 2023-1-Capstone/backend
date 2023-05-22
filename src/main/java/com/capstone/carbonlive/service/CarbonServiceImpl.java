@@ -41,7 +41,7 @@ public class CarbonServiceImpl implements CarbonService{
             int cIdx = c.getRecordedAt().getMonth().getValue() - 1;
 
             if (c.getUsages() != null)
-                usages[cIdx] = c.getUsages();
+                usages[cIdx] += c.getUsages();
         }
         if (year != -1){
             insertYearResponse(result, year, usages);

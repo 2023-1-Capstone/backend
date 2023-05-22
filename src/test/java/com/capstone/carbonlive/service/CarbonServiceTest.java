@@ -36,32 +36,40 @@ class CarbonServiceTest {
 
     @BeforeEach
     void setUp() {
-        Building sampleBuilding = Building.builder()
+        Building sampleBuilding1 = Building.builder()
                 .name("본관")
                 .elecArea(new BigDecimal("10"))
                 .gasArea(new BigDecimal("10"))
                 .build();
-        buildingRepository.save(sampleBuilding);
+        Building sampleBuilding2 = sampleBuilding1.toBuilder()
+                .name("힘들다")
+                .build();
+        buildingRepository.save(sampleBuilding1);
+        buildingRepository.save(sampleBuilding2);
 
         List<Carbon> carbonList = new ArrayList<>();
         IntStream.range(3, 9).forEach(i -> {
-            Carbon carbon = Carbon.builder()
-                    .building(sampleBuilding)
+            Carbon carbon1 = Carbon.builder()
+                    .building(sampleBuilding1)
                     .usages(50 + i)
                     .recordedAt(LocalDate.of(2019, i, 1))
                     .build();
-            carbonList.add(carbon);
+            Carbon carbon2 = carbon1.toBuilder()
+                    .building(sampleBuilding2)
+                    .build();
+            carbonList.add(carbon1);
+            carbonList.add(carbon2);
         });
         Carbon carbon = Carbon.builder()
                 .usages(27)
-                .building(sampleBuilding)
+                .building(sampleBuilding1)
                 .recordedAt(LocalDate.of(2017, 7, 1))
                 .build();
         carbonList.add(carbon);
         Carbon predictionCarbon = Carbon.builder()
                 .recordedAt(LocalDate.of(2018, 2, 1))
                 .prediction(10023)
-                .building(sampleBuilding)
+                .building(sampleBuilding1)
                 .build();
         carbonList.add(predictionCarbon);
 
@@ -81,7 +89,7 @@ class CarbonServiceTest {
         assertThat(yearUsages.get(1).getYear()).isEqualTo(2019);
         assertThat(yearUsages.get(0).getUsages()[6]).isEqualTo(27);
         IntStream.range(2, 8).forEach(i ->
-                assertThat(yearUsages.get(1).getUsages()[i]).isEqualTo(51 + i)
+                assertThat(yearUsages.get(1).getUsages()[i]).isEqualTo(2 * (51 + i))
         );
     }
 
@@ -112,8 +120,9 @@ class CarbonServiceTest {
 
         //then
         System.out.println("result = " + result);
-        assertThat(result.size()).isEqualTo(1);
+        assertThat(result.size()).isEqualTo(2);
         assertThat(result.get(0).getName()).isEqualTo("본관");
+        assertThat(result.get(1).getName()).isEqualTo("힘들다");
 
         IntStream.range(2, 8).forEach(i ->
                 assertThat(result.get(0).getUsagesList().get(2).getUsages()[i].getData()).isEqualTo(50 + i + 1));

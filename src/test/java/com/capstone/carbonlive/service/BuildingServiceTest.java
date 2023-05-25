@@ -1,9 +1,8 @@
 package com.capstone.carbonlive.service;
 
-import com.capstone.carbonlive.dto.BuildingResponse;
+import com.capstone.carbonlive.dto.response.BuildingResponse;
 import com.capstone.carbonlive.entity.Building;
 import com.capstone.carbonlive.repository.BuildingRepository;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -15,7 +14,6 @@ import java.math.BigDecimal;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @Transactional

@@ -1,9 +1,11 @@
 package com.capstone.carbonlive.service;
 
 import com.capstone.carbonlive.dto.*;
+import com.capstone.carbonlive.dto.response.FeeResponse;
+import com.capstone.carbonlive.dto.response.SeasonResponse;
+import com.capstone.carbonlive.dto.response.UsageResponse;
+import com.capstone.carbonlive.dto.response.UsageWithNameResponse;
 import com.capstone.carbonlive.entity.Building;
-import com.capstone.carbonlive.entity.Gas;
-import com.capstone.carbonlive.entity.GasFee;
 import com.capstone.carbonlive.repository.BuildingRepository;
 import com.capstone.carbonlive.repository.GasFeeRepository;
 import com.capstone.carbonlive.repository.GasRepository;

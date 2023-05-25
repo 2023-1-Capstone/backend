@@ -1,9 +1,9 @@
 package com.capstone.carbonlive.service;
 
-import com.capstone.carbonlive.dto.CarbonYearResponse;
-import com.capstone.carbonlive.dto.UsageResponse;
+import com.capstone.carbonlive.dto.response.CarbonYearResponse;
+import com.capstone.carbonlive.dto.response.UsageResponse;
 import com.capstone.carbonlive.dto.UsageResult;
-import com.capstone.carbonlive.dto.UsageWithNameResponse;
+import com.capstone.carbonlive.dto.response.UsageWithNameResponse;
 import com.capstone.carbonlive.entity.Building;
 import com.capstone.carbonlive.entity.Carbon;
 import com.capstone.carbonlive.repository.BuildingRepository;

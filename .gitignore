@@ -42,6 +42,3 @@ out/
 
 ### docker ###
 Dockerfile
-
-### application.properties ###
-/src/main/resources/application.properties

@@ -1,6 +1,8 @@
 package com.capstone.carbonlive.controller;
 
 import com.capstone.carbonlive.dto.*;
+import com.capstone.carbonlive.dto.response.WaterPredictionFeeResponse;
+import com.capstone.carbonlive.dto.response.WaterResponse;
 import com.capstone.carbonlive.restdocs.AbstractRestDocsTest;
 import com.capstone.carbonlive.service.WaterService;
 import org.junit.jupiter.api.Test;

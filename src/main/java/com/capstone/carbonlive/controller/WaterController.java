@@ -1,7 +1,7 @@
 package com.capstone.carbonlive.controller;
 
 import com.capstone.carbonlive.dto.UsageResult;
-import com.capstone.carbonlive.dto.WaterResponse;
+import com.capstone.carbonlive.dto.response.WaterResponse;
 import com.capstone.carbonlive.service.WaterService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

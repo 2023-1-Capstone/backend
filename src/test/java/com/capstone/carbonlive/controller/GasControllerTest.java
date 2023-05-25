@@ -1,8 +1,5 @@
 package com.capstone.carbonlive.controller;
 
-import com.capstone.carbonlive.dto.FeeResponse;
-import com.capstone.carbonlive.dto.UsageFeeResponse;
-import com.capstone.carbonlive.dto.UsageResult;
 import com.capstone.carbonlive.entity.Building;
 import com.capstone.carbonlive.entity.Gas;
 import com.capstone.carbonlive.entity.GasFee;
@@ -23,7 +20,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.stream.IntStream;
 
 import static org.hamcrest.Matchers.nullValue;

@@ -52,6 +52,7 @@ public class UserService {
     public Long join(UserJoinRequest userJoinRequest) {
         User user = userJoinRequest.toEntity();
         user.encodePassword(passwordEncoder);
+        user.updateAuthStatus(false);
         user.setRole(UserRole.USER);
 
         //회원 중복 검증
@@ -90,7 +91,7 @@ public class UserService {
         //인증 상태 업데이트
         User user = userRepository.findByEmail(email).orElseThrow(
                 () -> new UserException(NO_USER));
-        user.setAuthStatus();
+        user.updateAuthStatus();
 
         //인증 완료 후 authToken 삭제
         redisService.deleteData(EMAILAUTH.getKey() + email);
@@ -122,10 +123,10 @@ public class UserService {
         response.addCookie(createCookie(refreshToken));
 
         //헤더에 access token 담기
-        response.addHeader(HEADER_STRING, TOKEN_PREFIX + accessToken);
+        response.addHeader(HEADER_STRING, accessToken);
     }
 
-    private Cookie createCookie(String refreshToken) {
+    public Cookie createCookie(String refreshToken) {
         String cookieName = "refreshToken";
         String cookieValue = refreshToken;
         Cookie cookie = new Cookie(cookieName, cookieValue);
@@ -189,7 +190,7 @@ public class UserService {
         response.addCookie(createCookie(newRefreshToken));
 
         //헤더에 acc //헤더에 access token 담기
-        response.addHeader(HEADER_STRING, TOKEN_PREFIX + newAccessToken);
+        response.addHeader(HEADER_STRING, newAccessToken);
     }
 
     /**
@@ -204,7 +205,7 @@ public class UserService {
             throw new UserException(NO_USER);
 
         //임시 비밀번호 생성
-        String tempPassword = UUID.randomUUID().toString().replace("-", "");
+        String tempPassword = getTempPassword();
 
         //인증 메일 전송
         mailSendService.sendMail_pw(username + "@inha.edu", tempPassword);
@@ -212,6 +213,20 @@ public class UserService {
         //임시 비밀번호 암호화 DB 업데이트
         String encodedTempPw = passwordEncoder.encode(tempPassword);
         user.updatePw(encodedTempPw);
+    }
+
+    private String getTempPassword() {
+        char[] charSet = new char[] {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F',
+                'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'};
+        String str = "";
+
+        int idx = 0;
+        for (int i = 0; i < 10; i++) {
+            idx = (int) (charSet.length * Math.random());
+            str += charSet[idx];
+        }
+
+        return str;
     }
 
     /**

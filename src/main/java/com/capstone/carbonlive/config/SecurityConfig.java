@@ -3,8 +3,11 @@ package com.capstone.carbonlive.config;
 import com.capstone.carbonlive.security.jwt.JwtAccessDeniedHandler;
 import com.capstone.carbonlive.security.jwt.JwtAuthenticationEntryPoint;
 import com.capstone.carbonlive.security.jwt.JwtAuthenticationFilter;
+import com.capstone.carbonlive.security.jwt.JwtExceptionFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -16,8 +19,10 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
-import java.util.Arrays;
+import java.util.List;
 
+
+@Configuration
 @EnableWebSecurity //SecurityConfig.class 를 Spring Filter Chain 에 등록
 @RequiredArgsConstructor
 public class SecurityConfig {
@@ -25,6 +30,7 @@ public class SecurityConfig {
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
     private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
     private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
+    private final JwtExceptionFilter jwtExceptionFilter;
 
     @Bean
     public BCryptPasswordEncoder passwordEncoder() {
@@ -32,8 +38,7 @@ public class SecurityConfig {
     }
 
     @Bean
-    public AuthenticationManager authenticationManager(
-            AuthenticationConfiguration authenticationConfiguration) throws Exception {
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
         return authenticationConfiguration.getAuthenticationManager();
     }
 
@@ -46,17 +51,22 @@ public class SecurityConfig {
 
                 .and()
 
-                .authorizeHttpRequests((authorize) -> authorize
-                        .requestMatchers("/api/user/join").permitAll()
-                        .requestMatchers("/api/user/joinConfirm").permitAll()
-                        .requestMatchers("/api/user/login").permitAll()
-                        .requestMatchers("/api/user/reissue").permitAll()
-                        .requestMatchers("/api/user/password").permitAll()
-                        .requestMatchers("/api/exception/**").permitAll()
-                        .anyRequest().authenticated()
-                )
+                .cors()
+
+                .and()
+
+                .authorizeHttpRequests()
+                .requestMatchers(HttpMethod.POST, "/api/user/join").permitAll()
+                .requestMatchers(HttpMethod.GET,"/api/user/joinConfirm").permitAll()
+                .requestMatchers(HttpMethod.POST,"/api/user/login").permitAll()
+                .requestMatchers(HttpMethod.POST,"/api/user/reissue").permitAll()
+                .requestMatchers(HttpMethod.POST,"/api/user/password").permitAll()
+                .anyRequest().authenticated()
+
+                .and()
 
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(jwtExceptionFilter, JwtAuthenticationFilter.class)
 
                 .exceptionHandling()
                 .authenticationEntryPoint(jwtAuthenticationEntryPoint)
@@ -69,15 +79,16 @@ public class SecurityConfig {
 
     @Bean
     public UrlBasedCorsConfigurationSource corsConfigurationSource() {
-        UrlBasedCorsConfigurationSource corsConfigSource = new UrlBasedCorsConfigurationSource();
+        CorsConfiguration configuration = new CorsConfiguration();
 
-        CorsConfiguration corsConfig = new CorsConfiguration();
-        corsConfig.setAllowedOriginPatterns(Arrays.asList("http://localhost:3000"));
-        corsConfig.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE"));
-        corsConfig.setAllowedHeaders(Arrays.asList("*"));
-        corsConfig.setAllowCredentials(true);
+        configuration.setAllowedOriginPatterns(List.of("http://localhost:3000"));
+        configuration.setAllowedHeaders(List.of("*"));
+        configuration.addExposedHeader("Authorization");
+        configuration.setAllowedMethods(List.of("GET", "PATCH", "POST", "OPTIONS"));
+        configuration.setAllowCredentials(true);
 
-        corsConfigSource.registerCorsConfiguration("/**", corsConfig);
-        return corsConfigSource;
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+        return source;
     }
 }

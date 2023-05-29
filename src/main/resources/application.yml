@@ -1,6 +1,6 @@
 spring:
   datasource:
-    url: jdbc:mysql://carbonlive.cbroqoequdmv.ap-northeast-2.rds.amazonaws.com:3306/carbonlive?useSSL=false&useUnicode=true&serverTimezone=Asia/Seoul
+    url: jdbc:mysql://carbonlive.cbroqoequdmv.ap-northeast-2.rds.amazonaws.com:3306/carbonlive?useSSL=false&allowPublicKeyRetrieval=true&useUnicode=true&serverTimezone=Asia/Seoul
     username: root
     password:
     driver-class-name: com.mysql.cj.jdbc.Driver
@@ -31,7 +31,8 @@ spring:
 
   data:
     redis:
-      host: localhost
+#      host: localhost
+      host: redis
       port: 6379
 
 logging:

@@ -1,6 +1,6 @@
 package com.capstone.carbonlive.security.jwt;
 
-import com.capstone.carbonlive.exception.UserException;
+import com.capstone.carbonlive.errors.exception.UserException;
 import com.capstone.carbonlive.service.common.redis.RedisService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -15,7 +15,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 
-import static com.capstone.carbonlive.exception.ErrorCode.NO_LOGIN;
+import static com.capstone.carbonlive.errors.ErrorCode.NO_LOGIN;
 import static com.capstone.carbonlive.service.common.redis.RedisKey.BLACKLIST;
 
 

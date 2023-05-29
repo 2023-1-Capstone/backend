@@ -3,6 +3,8 @@ package com.capstone.carbonlive.controller;
 import com.capstone.carbonlive.dto.*;
 import com.capstone.carbonlive.dto.response.*;
 import com.capstone.carbonlive.restdocs.AbstractRestDocsTest;
+import com.capstone.carbonlive.security.jwt.JwtAuthenticationFilter;
+import com.capstone.carbonlive.security.jwt.JwtTokenProvider;
 import com.capstone.carbonlive.service.ElectricityService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -32,8 +34,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @WebMvcTest(ElectricityController.class)
 class ElectricityControllerTest extends AbstractRestDocsTest {
-    @MockBean
-    private ElectricityService electricityService;
+
+    @MockBean private ElectricityService electricityService;
+    @MockBean private JwtAuthenticationFilter jwtAuthenticationFilter;
+    @MockBean private JwtTokenProvider jwtTokenProvider;
+
     private final String uri = "/api/electricity/";
 
     @Test

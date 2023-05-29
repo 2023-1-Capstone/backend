@@ -1,10 +1,7 @@
 package com.capstone.carbonlive.entity;
 
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Entity
@@ -36,11 +33,14 @@ public class User {
     private boolean authStatus;
 
     @Builder
-    public User(String username, String password, String email, String name, boolean authStatus) {
+    public User(String username, String password, String email, String name) {
         this.username = username;
         this.password = password;
         this.email = email;
         this.name = name;
+    }
+
+    public void setAuthStatus(boolean authStatus) {
         this.authStatus = authStatus;
     }
 
@@ -51,7 +51,7 @@ public class User {
     /**
      * 이메일 인증 진행
      */
-    public void setAuthStatus() {
+    public void updateAuthStatus() {
         this.authStatus = true;
     }
 

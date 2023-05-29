@@ -1,19 +1,20 @@
 package com.capstone.carbonlive.service;
 
 import com.capstone.carbonlive.dto.request.LoginRequest;
-import com.capstone.carbonlive.dto.request.ReissueRequest;
 import com.capstone.carbonlive.dto.request.UpdatePasswordRequest;
 import com.capstone.carbonlive.dto.request.UserJoinRequest;
 import com.capstone.carbonlive.entity.User;
 import com.capstone.carbonlive.entity.UserRole;
-import com.capstone.carbonlive.exception.EmailException;
-import com.capstone.carbonlive.exception.TokenException;
-import com.capstone.carbonlive.exception.UserException;
+import com.capstone.carbonlive.errors.exception.EmailException;
+import com.capstone.carbonlive.errors.exception.RequestDuplicationException;
+import com.capstone.carbonlive.errors.exception.TokenException;
+import com.capstone.carbonlive.errors.exception.UserException;
 import com.capstone.carbonlive.repository.UserRepository;
 import com.capstone.carbonlive.security.UserDetailsImpl;
 import com.capstone.carbonlive.security.jwt.JwtTokenProvider;
 import com.capstone.carbonlive.service.common.mail.MailSendService;
 import com.capstone.carbonlive.service.common.redis.RedisService;
+import com.capstone.carbonlive.service.common.redis.RequestValidationService;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -25,9 +26,10 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.IOException;
 import java.util.UUID;
 
-import static com.capstone.carbonlive.exception.ErrorCode.*;
+import static com.capstone.carbonlive.errors.ErrorCode.*;
 import static com.capstone.carbonlive.security.jwt.JwtProperties.*;
 import static com.capstone.carbonlive.service.common.redis.RedisKey.*;
 
@@ -43,16 +45,27 @@ public class UserService {
     private final JwtTokenProvider jwtTokenProvider;
 
     private final RedisService redisService;
+    private final RequestValidationService requestValidationService;
     private final MailSendService mailSendService;
 
     /**
      * 회원가입
      */
     @Transactional
-    public Long join(UserJoinRequest userJoinRequest) {
+    public void join(UserJoinRequest userJoinRequest) {
+        /**
+         * 중복요청 방지 처리
+         */
+        if (requestValidationService.isDuplicatedRequest())
+            throw new RequestDuplicationException(DUPLICATED_REQUEST);
+        requestValidationService.save(userJoinRequest.getUsername());
+
+        /**
+         * 회원가입 로직
+         */
         User user = userJoinRequest.toEntity();
         user.encodePassword(passwordEncoder);
-        user.updateAuthStatus(false);
+        user.setAuthStatus(false);
         user.setRole(UserRole.USER);
 
         //회원 중복 검증
@@ -67,8 +80,6 @@ public class UserService {
 
         //인증메일 발송
         mailSendService.sendMail(userJoinRequest.getEmail(), authToken);
-
-        return user.getId();
     }
 
     private void validateDuplicatedUser(User user) {
@@ -80,21 +91,23 @@ public class UserService {
      * 회원가입 이메일 인증 성공
      */
     @Transactional
-    public void joinConfirm(String email, String authToken) {
-        String redisAuthToken = redisService.getData(EMAILAUTH.getKey() + email);
-
-        if (redisAuthToken == null)
-            throw new TokenException(NO_AUTH_TOKEN);
-        if (!redisAuthToken.equals(authToken))
-            throw new TokenException(NO_AUTH_TOKEN);
-
-        //인증 상태 업데이트
+    public String joinConfirm(String email, String authToken) throws IOException {
         User user = userRepository.findByEmail(email).orElseThrow(
                 () -> new UserException(NO_USER));
+
+        String redisAuthToken = redisService.getData(EMAILAUTH.getKey() + email);
+        if (redisAuthToken == null || !redisAuthToken.equals(authToken)) {
+            userRepository.delete(user);
+            return "http://localhost:3000/authException";
+        }
+
+        //인증 상태 업데이트
         user.updateAuthStatus();
 
         //인증 완료 후 authToken 삭제
         redisService.deleteData(EMAILAUTH.getKey() + email);
+
+        return null;
     }
 
     /**
@@ -169,15 +182,12 @@ public class UserService {
      * 토큰 재발행
      */
     @Transactional
-    public void reissue(ReissueRequest reissueRequest, HttpServletResponse response) {
-        String username = reissueRequest.getUsername();
-        String refreshToken = reissueRequest.getRefreshToken();
-
+    public void reissue(String username, String refreshToken, HttpServletResponse response) {
         String redisRefreshToken = redisService.getData(REFRESH.getKey() + username);
         if (redisRefreshToken == null)
             throw new TokenException(NO_REFRESH_TOKEN);
         if (!redisRefreshToken.equals(refreshToken))
-            throw new TokenException(NO_REFRESH_TOKEN);
+            throw new TokenException(WRONG_REFRESH_TOKEN);
 
         //토큰 재발급
         User user = userRepository.findByUsername(username).orElseThrow(
@@ -189,7 +199,7 @@ public class UserService {
         //쿠키에 새로운 refresh token 저장
         response.addCookie(createCookie(newRefreshToken));
 
-        //헤더에 acc //헤더에 access token 담기
+        //헤더에 access token 담기
         response.addHeader(HEADER_STRING, newAccessToken);
     }
 

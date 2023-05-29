@@ -1,20 +1,19 @@
 package com.capstone.carbonlive.controller;
 
-import com.capstone.carbonlive.dto.request.LoginRequest;
-import com.capstone.carbonlive.dto.request.ReissueRequest;
-import com.capstone.carbonlive.dto.request.UpdatePasswordRequest;
-import com.capstone.carbonlive.dto.request.UserJoinRequest;
+import com.capstone.carbonlive.dto.request.*;
 import com.capstone.carbonlive.security.UserDetailsImpl;
 import com.capstone.carbonlive.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
+
+import java.io.IOException;
 
 
 @RestController
@@ -40,17 +39,23 @@ public class UserController {
      * 회원가입 이메일 인증 성공
      */
     @GetMapping("/joinConfirm")
-    public ResponseEntity<?> joinConfirm(@RequestParam("email") String email, @RequestParam("authToken") String authToken) {
-        userService.joinConfirm(email, authToken);
+    @ResponseStatus(HttpStatus.OK)
+    public void joinConfirm(@RequestParam("email") String email,
+                            @RequestParam("authToken") String authToken,
+                            HttpServletResponse response) throws IOException {
 
-        return ResponseEntity.ok().build();
+        String uri = userService.joinConfirm(email, authToken);
+        if (uri != null)
+            response.sendRedirect(uri);
+        else
+            response.sendRedirect("http://localhost:3000");
     }
 
     /**
      * 로그인
      */
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody @Valid LoginRequest loginRequest, HttpServletResponse response) {
+    public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest, HttpServletResponse response) {
         userService.login(loginRequest, response);
 
         return ResponseEntity.ok().build();
@@ -73,8 +78,10 @@ public class UserController {
      * 토큰 재발급
      */
     @PostMapping("/reissue")
-    public ResponseEntity<?> reissue(@RequestBody @Valid ReissueRequest reissueRequest, HttpServletResponse response) {
-        userService.reissue(reissueRequest, response);
+    public ResponseEntity<?> reissue(@RequestBody ReissueRequest reissueRequest,
+            @CookieValue("refreshToken") String refreshToken, HttpServletResponse response) {
+
+        userService.reissue(reissueRequest.getUsername(), refreshToken, response);
 
         return ResponseEntity.ok().build();
     }
@@ -84,9 +91,9 @@ public class UserController {
      * -임시 비밀번호 발급
      * -로그인으로 리다이렉트
      */
-    @GetMapping("/password")
-    public ResponseEntity<?> findPassword(@RequestParam("username") String username, @RequestParam("name") String name) {
-        userService.findPassword(username, name);
+    @PostMapping("/password")
+    public ResponseEntity<?> findPassword(@RequestBody FindPasswordRequest findPasswordRequest) {
+        userService.findPassword(findPasswordRequest.getUsername(), findPasswordRequest.getName());
 
         return ResponseEntity.ok().build();
     }
@@ -94,8 +101,8 @@ public class UserController {
     /**
      * 비밀번호 수정
      */
-    @PatchMapping("/newPw")
-    public ResponseEntity<?> updatePassword(Authentication authentication, @RequestBody @Valid UpdatePasswordRequest passwordRequest) {
+    @PatchMapping("/password")
+    public ResponseEntity<?> updatePassword(Authentication authentication, @RequestBody UpdatePasswordRequest passwordRequest) {
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
 
         userService.updatePassword(userDetails.getUsername(), passwordRequest);

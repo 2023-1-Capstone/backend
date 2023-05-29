@@ -1,7 +1,7 @@
 package com.capstone.carbonlive.security;
 
 import com.capstone.carbonlive.entity.User;
-import com.capstone.carbonlive.exception.UserException;
+import com.capstone.carbonlive.errors.exception.UserException;
 import com.capstone.carbonlive.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -9,7 +9,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import static com.capstone.carbonlive.exception.ErrorCode.NO_USER;
+import static com.capstone.carbonlive.errors.ErrorCode.NO_USER;
 
 /**
  * AuthenticationProvider vs UserDetailsService

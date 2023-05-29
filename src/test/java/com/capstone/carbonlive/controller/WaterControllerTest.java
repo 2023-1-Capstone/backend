@@ -4,6 +4,8 @@ import com.capstone.carbonlive.dto.*;
 import com.capstone.carbonlive.dto.response.WaterPredictionFeeResponse;
 import com.capstone.carbonlive.dto.response.WaterResponse;
 import com.capstone.carbonlive.restdocs.AbstractRestDocsTest;
+import com.capstone.carbonlive.security.jwt.JwtAuthenticationFilter;
+import com.capstone.carbonlive.security.jwt.JwtTokenProvider;
 import com.capstone.carbonlive.service.WaterService;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -32,8 +34,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(WaterController.class)
 class WaterControllerTest extends AbstractRestDocsTest {
 
-    @MockBean
-    private WaterService waterService;
+    @MockBean private WaterService waterService;
+    @MockBean private JwtAuthenticationFilter jwtAuthenticationFilter;
+    @MockBean private JwtTokenProvider jwtTokenProvider;
+
     private final String uri = "/api/water";
 
     @Test

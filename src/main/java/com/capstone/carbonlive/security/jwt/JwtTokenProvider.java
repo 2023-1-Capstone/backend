@@ -18,6 +18,7 @@ import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.util.Date;
 
+import static com.capstone.carbonlive.errors.ErrorCode.*;
 import static com.capstone.carbonlive.security.jwt.JwtProperties.*;
 
 /**
@@ -114,16 +115,20 @@ public class JwtTokenProvider {
 
         } catch (SignatureException e) {
             log.error("Invalid JWT signature", e);
+            throw new JwtException(WRONG_TYPE_TOKEN);
         } catch (MalformedJwtException e) {
             log.error("Invalid JWT token", e);
+            throw new JwtException(WRONG_TYPE_TOKEN);
         } catch (ExpiredJwtException e) {
             log.error("JWT token is expired", e);
+            throw new JwtException(EXPIRED_TOKEN);
         } catch (UnsupportedJwtException e) {
             log.error("JWT token is unsupported", e);
+            throw new JwtException(UNSUPPORTED_TOKEN);
         } catch (IllegalArgumentException e) {
             log.error("JWT claims string is empty", e);
+            throw new JwtException(UNKNOWN_ERROR);
         }
-        return false;
     }
 
     /**

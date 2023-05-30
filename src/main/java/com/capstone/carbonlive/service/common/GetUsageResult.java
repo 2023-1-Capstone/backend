@@ -2,7 +2,7 @@ package com.capstone.carbonlive.service.common;
 
 import com.capstone.carbonlive.dto.*;
 import com.capstone.carbonlive.dto.response.*;
-import com.capstone.carbonlive.entity.BaseEntity;
+import com.capstone.carbonlive.entity.PredictionBaseEntity;
 import com.capstone.carbonlive.entity.FeeBaseEntity;
 import com.capstone.carbonlive.entity.Water;
 
@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.stream.IntStream;
 
 public class GetUsageResult {
-    public static <T extends BaseEntity> UsageResult<UsageResponse> getBuildingUsageResult(List<T> ascDataList) {
+    public static <T extends PredictionBaseEntity> UsageResult<UsageResponse> getBuildingUsageResult(List<T> ascDataList) {
         UsageResult<UsageResponse> result = new UsageResult<>(new ArrayList<>());
 
         int year = -1;
@@ -114,7 +114,7 @@ public class GetUsageResult {
         return result;
     }
 
-    public static <T extends BaseEntity> UsageResult<SeasonResponse> getSeasonUsageResult(List<T> ascDataList) {
+    public static <T extends PredictionBaseEntity> UsageResult<SeasonResponse> getSeasonUsageResult(List<T> ascDataList) {
         UsageResult<SeasonResponse> result = new UsageResult<>(new ArrayList<>());
 
         List<Integer> yearList = new ArrayList<>();
@@ -135,7 +135,7 @@ public class GetUsageResult {
         return result;
     }
 
-    private static <T extends BaseEntity> void insertSeasonResponse(
+    private static <T extends PredictionBaseEntity> void insertSeasonResponse(
             List<T> ascDataList, UsageResult<SeasonResponse> result, boolean[] isPrediction, Integer year) {
 
         SeasonResponse seasonResponse = new SeasonResponse(year.intValue());

@@ -7,14 +7,13 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
-import java.time.LocalDate;
 
 @MappedSuperclass
 @Getter
 @SuperBuilder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public abstract class FeeBaseEntity extends BaseEntity {
+public abstract class PredictionBaseEntity extends BaseEntity {
 
     @Column
-    protected Integer fee;
+    protected Integer prediction;
 }

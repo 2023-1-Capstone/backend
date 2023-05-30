@@ -1,28 +1,27 @@
 package com.capstone.carbonlive.entity;
 
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 
+
 @Entity
 @Getter
-@ToString
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Water extends PredictionBaseEntity {
+public class EntireCarbon extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "WATER_ID")
+    @Column(name = "ENTIRE_CARBON_ID")
     private Long id;
 
-    private Integer fee;
-
     @Builder(toBuilder = true)
-    public Water(LocalDate recordedAt, Integer usages, Integer prediction, Integer fee){
+    public EntireCarbon(LocalDate recordedAt, Integer usages) {
         this.recordedAt = recordedAt;
         this.usages = usages;
-        this.prediction = prediction;
-        this.fee = fee;
     }
 }

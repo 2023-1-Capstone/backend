@@ -1,7 +1,7 @@
 package com.capstone.carbonlive.controller;
 
 import com.capstone.carbonlive.service.BuildingService;
-import com.capstone.carbonlive.dto.BuildingResponse;
+import com.capstone.carbonlive.dto.response.BuildingResponse;
 import com.capstone.carbonlive.dto.BuildingResult;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

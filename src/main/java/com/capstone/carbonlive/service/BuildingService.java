@@ -2,7 +2,7 @@ package com.capstone.carbonlive.service;
 
 import com.capstone.carbonlive.entity.Building;
 import com.capstone.carbonlive.repository.BuildingRepository;
-import com.capstone.carbonlive.dto.BuildingResponse;
+import com.capstone.carbonlive.dto.response.BuildingResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

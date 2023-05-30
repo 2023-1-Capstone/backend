@@ -1,7 +1,13 @@
 package com.capstone.carbonlive.controller;
 
 import com.capstone.carbonlive.dto.*;
+import com.capstone.carbonlive.dto.response.CarbonYearResponse;
+import com.capstone.carbonlive.dto.response.UsagePredictionResponse;
+import com.capstone.carbonlive.dto.response.UsageResponse;
+import com.capstone.carbonlive.dto.response.UsageWithNameResponse;
 import com.capstone.carbonlive.restdocs.AbstractRestDocsTest;
+import com.capstone.carbonlive.security.jwt.JwtAuthenticationFilter;
+import com.capstone.carbonlive.security.jwt.JwtTokenProvider;
 import com.capstone.carbonlive.service.CarbonService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.DisplayName;
@@ -32,8 +38,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(CarbonController.class)
 class CarbonControllerTest extends AbstractRestDocsTest {
 
-    @MockBean
-    private CarbonService carbonService;
+    @MockBean private CarbonService carbonService;
+    @MockBean private JwtAuthenticationFilter jwtAuthenticationFilter;
+    @MockBean private JwtTokenProvider jwtTokenProvider;
+
     private final String uri = "/api/carbon/";
 
     @Test

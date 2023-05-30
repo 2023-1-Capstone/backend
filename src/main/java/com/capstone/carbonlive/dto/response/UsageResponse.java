@@ -1,4 +1,4 @@
-package com.capstone.carbonlive.dto;
+package com.capstone.carbonlive.dto.response;
 
 import lombok.Data;
 

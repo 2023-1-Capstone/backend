@@ -6,8 +6,10 @@ import com.capstone.carbonlive.dto.UsageResult;
 import com.capstone.carbonlive.dto.response.UsageWithNameResponse;
 import com.capstone.carbonlive.entity.Building;
 import com.capstone.carbonlive.entity.Carbon;
+import com.capstone.carbonlive.entity.EntireCarbon;
 import com.capstone.carbonlive.repository.BuildingRepository;
 import com.capstone.carbonlive.repository.CarbonRepository;
+import com.capstone.carbonlive.repository.EntireCarbonRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -20,16 +22,18 @@ import static com.capstone.carbonlive.service.common.GetUsageResult.getBuildingU
 @Service
 @RequiredArgsConstructor
 public class CarbonServiceImpl implements CarbonService{
+
     private final CarbonRepository carbonRepository;
     private final BuildingRepository buildingRepository;
+    private final EntireCarbonRepository entireCarbonRepository;
 
     @Override
     public UsageResult<CarbonYearResponse> getYearsUsages() {
         UsageResult<CarbonYearResponse> result = new UsageResult<>(new ArrayList<>());
-        List<Carbon> carbonList = carbonRepository.findAll(Sort.by("recordedAt").ascending());
+        List<EntireCarbon> carbonList = entireCarbonRepository.findAll(Sort.by("recordedAt").ascending());
         int year = -1;
         int[] usages = new int[12];
-        for (Carbon c : carbonList){
+        for (EntireCarbon c : carbonList){
             if (year == -1)
                 year = c.getRecordedAt().getYear();
 

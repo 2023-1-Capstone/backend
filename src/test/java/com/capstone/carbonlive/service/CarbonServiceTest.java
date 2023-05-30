@@ -6,8 +6,10 @@ import com.capstone.carbonlive.dto.UsageResult;
 import com.capstone.carbonlive.dto.response.UsageWithNameResponse;
 import com.capstone.carbonlive.entity.Building;
 import com.capstone.carbonlive.entity.Carbon;
+import com.capstone.carbonlive.entity.EntireCarbon;
 import com.capstone.carbonlive.repository.BuildingRepository;
 import com.capstone.carbonlive.repository.CarbonRepository;
+import com.capstone.carbonlive.repository.EntireCarbonRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -27,12 +29,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 @Transactional
 class CarbonServiceTest {
 
-    @Autowired
-    private CarbonService carbonService;
-    @Autowired
-    private BuildingRepository buildingRepository;
-    @Autowired
-    private CarbonRepository carbonRepository;
+    @Autowired private CarbonService carbonService;
+    @Autowired private BuildingRepository buildingRepository;
+    @Autowired private CarbonRepository carbonRepository;
+    @Autowired private EntireCarbonRepository entireCarbonRepository;
 
     @BeforeEach
     void setUp() {
@@ -74,6 +74,15 @@ class CarbonServiceTest {
         carbonList.add(predictionCarbon);
 
         carbonRepository.saveAll(carbonList);
+
+        for (int i = 1; i < 13; i++) {
+            entireCarbonRepository.save(EntireCarbon.builder()
+                    .recordedAt(LocalDate.of(2017, i,1))
+                    .usages(i).build());
+            entireCarbonRepository.save(EntireCarbon.builder()
+                    .recordedAt(LocalDate.of(2018, i,1))
+                    .usages(i * 2).build());
+        }
     }
 
     @Test
@@ -86,10 +95,12 @@ class CarbonServiceTest {
 
         assertThat(yearUsages.size()).isEqualTo(2);
         assertThat(yearUsages.get(0).getYear()).isEqualTo(2017);
-        assertThat(yearUsages.get(1).getYear()).isEqualTo(2019);
-        assertThat(yearUsages.get(0).getUsages()[6]).isEqualTo(27);
-        IntStream.range(2, 8).forEach(i ->
-                assertThat(yearUsages.get(1).getUsages()[i]).isEqualTo(2 * (51 + i))
+        IntStream.range(0, 12).forEach(i ->
+                assertThat(yearUsages.get(0).getUsages()[i]).isEqualTo(i + 1)
+        );
+        assertThat(yearUsages.get(1).getYear()).isEqualTo(2018);
+        IntStream.range(0, 12).forEach(i ->
+                assertThat(yearUsages.get(1).getUsages()[i]).isEqualTo(2 * (i + 1))
         );
     }
 

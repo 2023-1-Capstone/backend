@@ -20,7 +20,4 @@ public abstract class BaseEntity {
 
     @Column
     protected Integer usages;
-
-    @Column
-    protected Integer prediction;
 }

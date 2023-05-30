@@ -13,12 +13,8 @@ import java.time.LocalDate;
 @Getter
 @SuperBuilder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public abstract class FeeBaseEntity {
+public abstract class FeeBaseEntity extends BaseEntity {
 
-    @Column(nullable = false)
-    protected LocalDate recordedAt;
-
-    protected Integer usages;
-
+    @Column
     protected Integer fee;
 }

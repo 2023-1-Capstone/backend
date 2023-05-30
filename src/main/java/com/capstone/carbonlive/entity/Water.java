@@ -9,7 +9,7 @@ import java.time.LocalDate;
 @Getter
 @ToString
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Water extends BaseEntity{
+public class Water extends PredictionBaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

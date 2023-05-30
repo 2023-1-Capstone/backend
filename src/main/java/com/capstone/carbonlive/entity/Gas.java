@@ -8,7 +8,7 @@ import java.time.LocalDate;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Gas extends BaseEntity{
+public class Gas extends PredictionBaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

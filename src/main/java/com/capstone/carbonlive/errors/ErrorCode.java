@@ -17,7 +17,7 @@ public enum ErrorCode {
 
     INVALID_ACCESS_TOKEN(HttpStatus.BAD_REQUEST, "유효하지 않은 엑세스 토큰입니다."),
     NO_REFRESH_TOKEN(HttpStatus.NOT_FOUND, "존재하지 않는 리프레시 토큰입니다."),
-    WRONG_REFRESH_TOKEN(HttpStatus.NOT_FOUND, "잘못된 리프레시 토큰입니다."),
+    WRONG_REFRESH_TOKEN(HttpStatus.BAD_REQUEST, "잘못된 리프레시 토큰입니다."),
     NO_AUTH_TOKEN(HttpStatus.NOT_FOUND, "존재하지 않는 인증 토큰입니다."),
 
     DUPLICATED_REQUEST(HttpStatus.BAD_REQUEST, "중복된 요청입니다."),

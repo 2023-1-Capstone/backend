@@ -179,7 +179,7 @@ public class UserService {
     }
 
     /**
-     * 토큰 재발행
+     * 토큰 재발급
      */
     @Transactional
     public void reissue(String username, String refreshToken, HttpServletResponse response) {
@@ -193,11 +193,6 @@ public class UserService {
         User user = userRepository.findByUsername(username).orElseThrow(
                 () -> new UserException(NO_USER));
         String newAccessToken = jwtTokenProvider.generateAccessToken(user);
-        String newRefreshToken = jwtTokenProvider.generateRefreshToken(user);
-        redisService.setDataWithExpiration(REFRESH.getKey() + username, newRefreshToken, REFRESH_TOKEN_VALID_TIME);
-
-        //쿠키에 새로운 refresh token 저장
-        response.addCookie(createCookie(newRefreshToken));
 
         //헤더에 access token 담기
         response.addHeader(HEADER_STRING, newAccessToken);

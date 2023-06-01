@@ -121,6 +121,18 @@ class GasControllerTest extends AbstractRestDocsTest {
     @Test
     @DisplayName("계절별 가스 사용량 받아오기")
     public void findGasBySeason() throws Exception {
+        //given
+        for (int i = 1; i < 13; i++) {
+            gasFeeRepository.save(GasFee.builder()
+                    .recordedAt(LocalDate.of(2018, i, 1))
+                    .usages(i)
+                    .fee(0).build());
+            gasFeeRepository.save(GasFee.builder()
+                    .recordedAt(LocalDate.of(2019, i, 1))
+                    .usages(i * 2)
+                    .fee(0).build());
+        }
+
         //when
         ResultActions result = this.mockMvc.perform(get("/api/gas/season"));
 
@@ -131,10 +143,12 @@ class GasControllerTest extends AbstractRestDocsTest {
                 .andExpect(jsonPath("$.result[0].usages[0]").value(12))
                 .andExpect(jsonPath("$.result[0].usages[1]").value(21))
                 .andExpect(jsonPath("$.result[0].usages[2]").value(30))
-                .andExpect(jsonPath("$.result[0].usages[3]").value(15))
+                .andExpect(jsonPath("$.result[0].usages[3]").value(18))
                 .andExpect(jsonPath("$.result[1].startYear").value(2019))
                 .andExpect(jsonPath("$.result[1].endYear").value(2020))
-                .andExpect(jsonPath("$.result[1].usages[2]").value(0))
+                .andExpect(jsonPath("$.result[1].usages[0]").value(24))
+                .andExpect(jsonPath("$.result[1].usages[1]").value(42))
+                .andExpect(jsonPath("$.result[1].usages[2]").value(60))
                 .andExpect(jsonPath("$.result[1].usages[3]").value(0));
 
         //docs

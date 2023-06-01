@@ -7,7 +7,6 @@ import com.capstone.carbonlive.entity.FeeBaseEntity;
 import com.capstone.carbonlive.entity.Water;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.IntStream;
 
@@ -114,7 +113,7 @@ public class GetUsageResult {
         return result;
     }
 
-    public static <T extends PredictionBaseEntity> UsageResult<SeasonResponse> getSeasonUsageResult(List<T> ascDataList) {
+    public static <T extends FeeBaseEntity> UsageResult<SeasonResponse> getSeasonUsageResult(List<T> ascDataList) {
         UsageResult<SeasonResponse> result = new UsageResult<>(new ArrayList<>());
 
         List<Integer> yearList = new ArrayList<>();
@@ -124,41 +123,46 @@ public class GetUsageResult {
                 yearList.add(curYear);
         }
 
-        UsagePredictionResponse[] usages = new UsagePredictionResponse[4];
-        boolean[] isPrediction = {false, false, false, false};
         for (Integer year : yearList) {
-            insertSeasonResponse(ascDataList, result, isPrediction, year);
-
-            Arrays.fill(isPrediction, false);  //초기화
+            insertSeasonResponse(ascDataList, result, year);
         }
 
         return result;
     }
 
-    private static <T extends PredictionBaseEntity> void insertSeasonResponse(
-            List<T> ascDataList, UsageResult<SeasonResponse> result, boolean[] isPrediction, Integer year) {
+    private static <T extends FeeBaseEntity> void insertSeasonResponse(
+            List<T> ascDataList, UsageResult<SeasonResponse> result, Integer year) {
 
         SeasonResponse seasonResponse = new SeasonResponse(year.intValue());
 
+        int[] count = {0, 0, 0, 0};
         for (T data : ascDataList) {
             if (data.getRecordedAt().getYear() == year.intValue()) {
                 int month = data.getRecordedAt().getMonth().getValue();
                 switch (month / 3) {
                     case 1:     //3,4,5월
-                        if (data.getPrediction() != null || data.getUsages() == null) isPrediction[0] = true;
-                        else seasonResponse.getUsages()[0] += data.getUsages();
+                        if (data.getUsages() != null) {
+                            seasonResponse.getUsages()[0] += data.getUsages();
+                            count[0]++;
+                        }
                         break;
                     case 2:     //6,7,8월
-                        if (data.getPrediction() != null || data.getUsages() == null) isPrediction[1] = true;
-                        else seasonResponse.getUsages()[1] += data.getUsages();
+                        if (data.getUsages() != null) {
+                            seasonResponse.getUsages()[1] += data.getUsages();
+                            count[1]++;
+                        }
                         break;
                     case 3:     //9,10,11월
-                        if (data.getPrediction() != null || data.getUsages() == null) isPrediction[2] = true;
-                        else seasonResponse.getUsages()[2] += data.getUsages();
+                        if (data.getUsages() != null) {
+                            seasonResponse.getUsages()[2] += data.getUsages();
+                            count[2]++;
+                        }
                         break;
                     case 4:    //12월
-                        if (data.getPrediction() != null || data.getUsages() == null) isPrediction[3] = true;
-                        else seasonResponse.getUsages()[3] += data.getUsages();
+                        if (data.getUsages() != null) {
+                            seasonResponse.getUsages()[3] += data.getUsages();
+                            count[3]++;
+                        }
                         break;
                 }
             }
@@ -166,14 +170,16 @@ public class GetUsageResult {
             else if (data.getRecordedAt().getYear() == seasonResponse.getEndYear()) {
                 int month = data.getRecordedAt().getMonth().getValue();
                 if (month == 1 || month == 2) {
-                    if (data.getPrediction() != null || data.getUsages() == null) isPrediction[3] = true;
-                    else seasonResponse.getUsages()[3] += data.getUsages();
+                    if (data.getUsages() != null) {
+                        seasonResponse.getUsages()[3] += data.getUsages();
+                        count[3]++;
+                    }
                 }
             }
         }
         //데이터가 하나라도 부족하면 0으로 처리
         for (int i = 0; i < 4; i++) {
-            if (isPrediction[i]) {
+            if (count[i] != 3) {
                 seasonResponse.getUsages()[i] = 0;
             }
         }

@@ -134,6 +134,8 @@ class ElectricityControllerTest extends AbstractRestDocsTest {
                 .andExpect(jsonPath("$.result[0].usages[1]").value(2))
                 .andExpect(jsonPath("$.result[0].usages[2]").value(3))
                 .andExpect(jsonPath("$.result[0].usages[3]").value(4))
+                .andExpect(jsonPath("$.result[1].startYear").value(2019))
+                .andExpect(jsonPath("$.result[1].endYear").value(2020))
                 .andExpect(jsonPath("$.result[1].usages[3]").value(16));
 
         //docs

@@ -42,7 +42,7 @@ public class GasService {
      * 계절별 가스 사용량
      */
     public UsageResult<SeasonResponse> findBySeason() {
-        return getSeasonUsageResult(gasRepository.findAll(Sort.by("recordedAt").ascending()));
+        return getSeasonUsageResult(gasFeeRepository.findAll(Sort.by("recordedAt").ascending()));
     }
 
     public UsageResult<UsageWithNameResponse> findAll() {

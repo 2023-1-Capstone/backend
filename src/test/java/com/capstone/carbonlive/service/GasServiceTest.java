@@ -98,6 +98,18 @@ class GasServiceTest {
     @Test
     @DisplayName("계절별 가스 사용량 출력")
     public void findBySeason() {
+        //given
+        for (int i = 1; i < 13; i++) {
+            gasFeeRepository.save(GasFee.builder()
+                    .recordedAt(LocalDate.of(2018, i, 1))
+                    .usages(i)
+                    .fee(0).build());
+            gasFeeRepository.save(GasFee.builder()
+                    .recordedAt(LocalDate.of(2019, i, 1))
+                    .usages(i * 2)
+                    .fee(0).build());
+        }
+
         //when
         UsageResult<SeasonResponse> result = gasService.findBySeason();
 
@@ -108,10 +120,12 @@ class GasServiceTest {
         assertThat(result.getResult().get(0).getUsages()[0]).isEqualTo(12);
         assertThat(result.getResult().get(0).getUsages()[1]).isEqualTo(21);
         assertThat(result.getResult().get(0).getUsages()[2]).isEqualTo(30);
-        assertThat(result.getResult().get(0).getUsages()[3]).isEqualTo(15);
+        assertThat(result.getResult().get(0).getUsages()[3]).isEqualTo(18);
         assertThat(result.getResult().get(1).getStartYear()).isEqualTo(2019);
         assertThat(result.getResult().get(1).getEndYear()).isEqualTo(2020);
-        assertThat(result.getResult().get(1).getUsages()[2]).isEqualTo(0);
+        assertThat(result.getResult().get(1).getUsages()[0]).isEqualTo(24);
+        assertThat(result.getResult().get(1).getUsages()[1]).isEqualTo(42);
+        assertThat(result.getResult().get(1).getUsages()[2]).isEqualTo(60);
         assertThat(result.getResult().get(1).getUsages()[3]).isEqualTo(0);
     }
 

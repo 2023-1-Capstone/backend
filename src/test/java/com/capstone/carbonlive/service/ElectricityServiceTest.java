@@ -107,6 +107,18 @@ class ElectricityServiceTest {
     @Test
     @DisplayName("계절별 전기 사용량 출력")
     public void getSeasonData() {
+        //given
+        for (int i = 1; i < 13; i++) {
+            electricityFeeRepository.save(ElectricityFee.builder()
+                    .recordedAt(LocalDate.of(2018, i, 1))
+                    .usages(i)
+                    .fee(0).build());
+            electricityFeeRepository.save(ElectricityFee.builder()
+                    .recordedAt(LocalDate.of(2019, i, 1))
+                    .usages(i * 2)
+                    .fee(0).build());
+        }
+
         //when
         UsageResult<SeasonResponse> result = electricityService.getSeasonData();
 
@@ -114,13 +126,15 @@ class ElectricityServiceTest {
         System.out.println("result = " + result);
         assertThat(result.getResult().get(0).getStartYear()).isEqualTo(2018);
         assertThat(result.getResult().get(0).getEndYear()).isEqualTo(2019);
-        assertThat(result.getResult().get(0).getUsages()[0]).isEqualTo(24);
-        assertThat(result.getResult().get(0).getUsages()[1]).isEqualTo(42);
-        assertThat(result.getResult().get(0).getUsages()[2]).isEqualTo(60);
-        assertThat(result.getResult().get(0).getUsages()[3]).isEqualTo(30);
+        assertThat(result.getResult().get(0).getUsages()[0]).isEqualTo(12);
+        assertThat(result.getResult().get(0).getUsages()[1]).isEqualTo(21);
+        assertThat(result.getResult().get(0).getUsages()[2]).isEqualTo(30);
+        assertThat(result.getResult().get(0).getUsages()[3]).isEqualTo(18);
         assertThat(result.getResult().get(1).getStartYear()).isEqualTo(2019);
         assertThat(result.getResult().get(1).getEndYear()).isEqualTo(2020);
-        assertThat(result.getResult().get(1).getUsages()[2]).isEqualTo(0);
+        assertThat(result.getResult().get(1).getUsages()[0]).isEqualTo(24);
+        assertThat(result.getResult().get(1).getUsages()[1]).isEqualTo(42);
+        assertThat(result.getResult().get(1).getUsages()[2]).isEqualTo(60);
         assertThat(result.getResult().get(1).getUsages()[3]).isEqualTo(0);
     }
 

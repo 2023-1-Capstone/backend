@@ -44,7 +44,7 @@ public class ElectricityServiceImpl implements ElectricityService {
      */
     @Override
     public UsageResult<SeasonResponse> getSeasonData() {
-        return getSeasonUsageResult(electricityRepository.findAll(Sort.by("recordedAt").ascending()));
+        return getSeasonUsageResult(electricityFeeRepository.findAll(Sort.by("recordedAt").ascending()));
     }
 
     @Override

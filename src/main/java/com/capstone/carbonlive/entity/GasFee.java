@@ -21,9 +21,11 @@ public class GasFee extends FeeBaseEntity {
     private Long id;
 
     @Builder(toBuilder = true)
-    public GasFee(LocalDate recordedAt, Integer usages, Integer fee) {
+    public GasFee(LocalDate recordedAt, Integer usages, Integer prediction, Integer fee, Integer fee_prediction) {
         this.recordedAt = recordedAt;
         this.usages = usages;
+        this.prediction = prediction;
         this.fee = fee;
+        this.fee_prediction = fee_prediction;
     }
 }

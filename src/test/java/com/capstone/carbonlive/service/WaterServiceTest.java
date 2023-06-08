@@ -51,6 +51,7 @@ class WaterServiceTest {
             Water water = Water.builder()
                     .recordedAt(LocalDate.of(2019, i, 1) )
                     .prediction(i)
+                    .fee_prediction(i)
                     .build();
             waterRepository.save(water);
         });
@@ -75,6 +76,7 @@ class WaterServiceTest {
                     assertThat(ascResult.getResult().get(i).getUsages()[j + 9].getData()).isEqualTo(expectData[i][j]);
                     assertThat(ascResult.getResult().get(i).getUsages()[j + 9].getPrediction()).isEqualTo(null);
                     assertThat(ascResult.getResult().get(i).getUsages()[j + 9].getFee()).isEqualTo(expectData[i][j]);
+                    assertThat(ascResult.getResult().get(i).getUsages()[j + 9].getFee_prediction()).isEqualTo(null);
                 }
             }
             else { // getYear() == 2019
@@ -82,11 +84,13 @@ class WaterServiceTest {
                     assertThat(ascResult.getResult().get(i).getUsages()[j].getData()).isEqualTo(expectData[i][j]);
                     assertThat(ascResult.getResult().get(i).getUsages()[j].getPrediction()).isEqualTo(null);
                     assertThat(ascResult.getResult().get(i).getUsages()[j].getFee()).isEqualTo(expectData[i][j]);
+                    assertThat(ascResult.getResult().get(i).getUsages()[j].getFee_prediction()).isEqualTo(null);
                 }
                 for (int j = 9; j < 12; j++) { //예측값
                     assertThat(ascResult.getResult().get(i).getUsages()[j].getData()).isEqualTo(null);
                     assertThat(ascResult.getResult().get(i).getUsages()[j].getPrediction()).isEqualTo(expectData[i][j]);
                     assertThat(ascResult.getResult().get(i).getUsages()[j].getFee()).isEqualTo(null);
+                    assertThat(ascResult.getResult().get(i).getUsages()[j].getFee_prediction()).isEqualTo(expectData[i][j]);
                 }
             }
         }

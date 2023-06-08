@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.IntStream;
 
+import static org.hamcrest.Matchers.nullValue;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.times;
@@ -44,41 +45,47 @@ class CarbonControllerTest extends AbstractRestDocsTest {
 
     private final String uri = "/api/carbon/";
 
-    @Test
-    void getYearUsages() throws Exception {
-        List<CarbonYearResponse> responseList = new ArrayList<>();
-        CarbonYearResponse response1 = new CarbonYearResponse(2019);
-        IntStream.range(0, 12).forEach(i -> response1.getUsages()[i] = i);
-        responseList.add(response1);
-        CarbonYearResponse response2 = new CarbonYearResponse(2022);
-        IntStream.range(0, 12).forEach(i -> response2.getUsages()[i] = i * 2);
-        responseList.add(response2);
+        @Test
+        void getYearUsages() throws Exception {
+            List<CarbonYearResponse> responseList = new ArrayList<>();
+            CarbonYearResponse response1 = new CarbonYearResponse(2019);
+            IntStream.range(0, 12).forEach(i -> response1.getUsages()[i] = new UsagePredictionResponse(i, null));
+            responseList.add(response1);
+            CarbonYearResponse response2 = new CarbonYearResponse(2022);
+            IntStream.range(0, 12).forEach(i -> response2.getUsages()[i] = new UsagePredictionResponse(i, i * 2));
+            responseList.add(response2);
 
-        UsageResult<CarbonYearResponse> result = new UsageResult<>(responseList);
+            UsageResult<CarbonYearResponse> result = new UsageResult<>(responseList);
 
-        given(carbonService.getYearsUsages())
-                .willReturn(result);
+            given(carbonService.getYearsUsages())
+                    .willReturn(result);
 
-        ResultActions resultActions = this.mockMvc.perform(get(uri + "year"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.result[0].year").value(2019))
-                .andExpect(jsonPath("$.result[1].year").value(2022));
-        for (int i = 0; i < 12; i++){
-                    resultActions.andExpect(jsonPath("$.result[0].usages[" + i + "]").value(i))
-                            .andExpect(jsonPath("$.result[1].usages[" + i + "]").value(i * 2));
-                }
-                resultActions.andDo(document("{class-name}/{method-name}",
-                        preprocessRequest(prettyPrint()),
-                        preprocessResponse(prettyPrint()),
-                        responseFields(
-                                fieldWithPath("result").description("결과 반환"),
-                                fieldWithPath("result[].year").description("년도"),
-                                fieldWithPath("result[].usages[]").description("해당 년도의 월별 총 탄소 배출량")
-                        ))
-                );
+            ResultActions resultActions = this.mockMvc.perform(get(uri + "year"))
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.result[0].year").value(2019))
+                    .andExpect(jsonPath("$.result[1].year").value(2022));
+            for (int i = 0; i < 12; i++){
+                        resultActions.andExpect(jsonPath("$.result[0].usages[" + i + "].data").value(i))
+                                .andExpect(jsonPath("$.result[0].usages[" + i + "].prediction", nullValue()))
+                                .andExpect(jsonPath("$.result[1].usages[" + i + "].data").value(i))
+                                .andExpect(jsonPath("$.result[1].usages[" + i + "].prediction").value(i * 2));
+                    }
+                    resultActions.andDo(document("{class-name}/{method-name}",
+                            preprocessRequest(prettyPrint()),
+                            preprocessResponse(prettyPrint()),
+                            responseFields(
+                                    fieldWithPath("result").description("결과 반환"),
+                                    fieldWithPath("result[].year").description("년도"),
+                                    fieldWithPath("result[].usages[]").description("해당 년도의 월별 총 탄소 배출량"),
+                                    fieldWithPath("result[].usages[].data").type(JsonFieldType.NUMBER)
+                                            .description("실 사용량. null인 경우, 실측 사용량이 없음").optional(),
+                                    fieldWithPath("result[].usages[].prediction").type(JsonFieldType.NUMBER)
+                                            .description("예측 사용량. null인 경우, 실측값이 존재하거나 예측 사용량이 없음").optional()
+                            ))
+                    );
 
-        then(carbonService).should(times(1)).getYearsUsages();
-    }
+            then(carbonService).should(times(1)).getYearsUsages();
+        }
 
     @Test
     @DisplayName("건물별 탄소 배출량")

@@ -7,8 +7,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
-import java.time.LocalDate;
-
 @MappedSuperclass
 @Getter
 @SuperBuilder
@@ -17,4 +15,7 @@ public abstract class FeeBaseEntity extends BaseEntity {
 
     @Column
     protected Integer fee;
+
+    @Column
+    protected Integer fee_prediction;
 }

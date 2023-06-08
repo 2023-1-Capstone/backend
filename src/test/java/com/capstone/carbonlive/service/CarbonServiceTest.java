@@ -81,7 +81,8 @@ class CarbonServiceTest {
                     .usages(i).build());
             entireCarbonRepository.save(EntireCarbon.builder()
                     .recordedAt(LocalDate.of(2018, i,1))
-                    .usages(i * 2).build());
+                    .usages(i)
+                    .prediction(i * 2).build());
         }
     }
 
@@ -96,11 +97,14 @@ class CarbonServiceTest {
         assertThat(yearUsages.size()).isEqualTo(2);
         assertThat(yearUsages.get(0).getYear()).isEqualTo(2017);
         IntStream.range(0, 12).forEach(i ->
-                assertThat(yearUsages.get(0).getUsages()[i]).isEqualTo(i + 1)
+                assertThat(yearUsages.get(0).getUsages()[i].getData()).isEqualTo(i + 1)
         );
         assertThat(yearUsages.get(1).getYear()).isEqualTo(2018);
         IntStream.range(0, 12).forEach(i ->
-                assertThat(yearUsages.get(1).getUsages()[i]).isEqualTo(2 * (i + 1))
+                assertThat(yearUsages.get(1).getUsages()[i].getData()).isEqualTo(i + 1)
+        );
+        IntStream.range(0, 12).forEach(i ->
+                assertThat(yearUsages.get(1).getUsages()[i].getPrediction()).isEqualTo(2 * (i + 1))
         );
     }
 

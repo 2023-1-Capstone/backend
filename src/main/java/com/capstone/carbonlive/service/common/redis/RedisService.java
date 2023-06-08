@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Duration;
+import java.util.concurrent.TimeUnit;
 
 @Service
 @Transactional
@@ -21,8 +22,7 @@ public class RedisService {
     public void setDataWithExpiration(String key, String value, Long time) {
         if (this.getData(key) != null)
             this.deleteData(key);
-        Duration expireDuration = Duration.ofMillis(time);
-        redisTemplate.opsForValue().set(key, value, expireDuration);
+        redisTemplate.opsForValue().set(key, value, time, TimeUnit.MILLISECONDS);
     }
 
     public void deleteData(String key) {

@@ -22,19 +22,17 @@ public class MailSendService {
             sendMail.setSubject("[CARBONLIVE] 이메일 인증");
             sendMail.setText(new StringBuffer().append("<h1>[이메일 인증]</h1>")
                     .append("<p>아래 링크를 클릭하시면 이메일 인증이 완료됩니다.</p>")
-                    .append("<a href='http://localhost:8080/api/user/joinConfirm?email=")
+                    .append("<a href='https://carbonlive.kro.kr/api/user/joinConfirm?email=")
                     .append(email)
                     .append("&authToken=")
                     .append(authToken)
                     .append("' target='_blenk'>이메일 인증 확인</a>")
                     .toString());
-            sendMail.setFrom("suhyun12090@gmail.com", "Carbonlive");
+            sendMail.setFrom("suhyun12090@gmail.com", "CarbonLive");
             sendMail.setTo(email);
             sendMail.send();
 
-        } catch (MessagingException e) {
-            e.printStackTrace();
-        } catch (UnsupportedEncodingException e) {
+        } catch (MessagingException | UnsupportedEncodingException e) {
             e.printStackTrace();
         }
     }
@@ -50,13 +48,11 @@ public class MailSendService {
                     .append(email + "님의 임시 비밀번호는 " + tempPassword + " 입니다. "
                     + "로그인 후에 비밀번호를 반드시 변경 해주세요.")
                     .toString());
-            sendMail.setFrom("suhyun12090@gmail.com", "Carbonlive");
+            sendMail.setFrom("suhyun12090@gmail.com", "CarbonLive");
             sendMail.setTo(email);
             sendMail.send();
 
-        } catch (MessagingException e) {
-            e.printStackTrace();
-        } catch (UnsupportedEncodingException e) {
+        } catch (MessagingException | UnsupportedEncodingException e) {
             e.printStackTrace();
         }
     }

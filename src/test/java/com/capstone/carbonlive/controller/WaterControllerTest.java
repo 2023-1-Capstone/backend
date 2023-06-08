@@ -54,7 +54,7 @@ class WaterControllerTest extends AbstractRestDocsTest {
 
         //2019-10 부터 2019-12 까지 예측값
         IntStream.range(8, 12).forEach(i ->
-                response2.getUsages()[i] = WaterPredictionFeeResponse.builder().prediction(i + 1).build());
+                response2.getUsages()[i] = WaterPredictionFeeResponse.builder().prediction(i + 1).fee_prediction(i + 1).build());
 
         responses.add(response1);
         responses.add(response2);
@@ -80,12 +80,15 @@ class WaterControllerTest extends AbstractRestDocsTest {
                 .andExpect(jsonPath("$.result[1].usages[0].data").value(1))
                 .andExpect(jsonPath("$.result[1].usages[0].fee").value(1))
                 .andExpect(jsonPath("$.result[1].usages[0].prediction", nullValue()))
+                .andExpect(jsonPath("$.result[1].usages[0].fee_prediction", nullValue()))
                 .andExpect(jsonPath("$.result[1].usages[8].prediction").value(9))
                 .andExpect(jsonPath("$.result[1].usages[8].data", nullValue()))
                 .andExpect(jsonPath("$.result[1].usages[8].fee", nullValue()))
+                .andExpect(jsonPath("$.result[1].usages[8].fee_prediction").value(9))
                 .andExpect(jsonPath("$.result[1].usages[11].prediction").value(12))
                 .andExpect(jsonPath("$.result[1].usages[11].data", nullValue()))
                 .andExpect(jsonPath("$.result[1].usages[11].fee", nullValue()))
+                .andExpect(jsonPath("$.result[1].usages[11].fee_prediction").value(12))
                 .andDo(print())
                 .andDo(document("{class-name}/{method-name}",
                         preprocessRequest(prettyPrint()),
@@ -99,7 +102,9 @@ class WaterControllerTest extends AbstractRestDocsTest {
                                 fieldWithPath("result[].usages[].prediction").type(JsonFieldType.NUMBER)
                                         .description("예측 사용량. null인 경우, 실측값이 존재하거나 예측 사용량이 없음").optional(),
                                 fieldWithPath("result[].usages[].fee").type(JsonFieldType.NUMBER)
-                                        .description("사용요금. null인 경우, 사용요금 데이터가 없음").optional()
+                                        .description("사용요금. null인 경우, 사용요금 데이터가 없음").optional(),
+                                fieldWithPath("result[].usages[].fee_prediction").type(JsonFieldType.NUMBER)
+                                        .description("사용요금 예측값. null인 경우, 실제 사용요금 데이터가 존재함").optional()
                         ))
                 );
 

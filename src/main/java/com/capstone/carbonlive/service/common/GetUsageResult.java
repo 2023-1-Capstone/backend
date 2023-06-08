@@ -2,7 +2,7 @@ package com.capstone.carbonlive.service.common;
 
 import com.capstone.carbonlive.dto.*;
 import com.capstone.carbonlive.dto.response.*;
-import com.capstone.carbonlive.entity.PredictionBaseEntity;
+import com.capstone.carbonlive.entity.BaseEntity;
 import com.capstone.carbonlive.entity.FeeBaseEntity;
 import com.capstone.carbonlive.entity.Water;
 
@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.stream.IntStream;
 
 public class GetUsageResult {
-    public static <T extends PredictionBaseEntity> UsageResult<UsageResponse> getBuildingUsageResult(List<T> ascDataList) {
+    public static <T extends BaseEntity> UsageResult<UsageResponse> getBuildingUsageResult(List<T> ascDataList) {
         UsageResult<UsageResponse> result = new UsageResult<>(new ArrayList<>());
 
         int year = -1;
@@ -69,6 +69,7 @@ public class GetUsageResult {
                             .data(data.getUsages())
                             .prediction(data.getPrediction())
                             .fee(data.getFee())
+                            .fee_prediction(data.getFee_prediction())
                             .build();
 
                     int month = data.getRecordedAt().getMonth().getValue();
@@ -100,6 +101,8 @@ public class GetUsageResult {
                     UsageFeeResponse feeResponse = UsageFeeResponse.builder()
                             .usages(data.getUsages())
                             .fee(data.getFee())
+                            .prediction(data.getPrediction())
+                            .fee_prediction(data.getFee_prediction())
                             .build();
 
                     int month = data.getRecordedAt().getMonth().getValue();

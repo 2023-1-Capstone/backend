@@ -8,6 +8,7 @@ import com.capstone.carbonlive.dto.response.UsageWithNameResponse;
 import com.capstone.carbonlive.entity.Building;
 import com.capstone.carbonlive.entity.Electricity;
 import com.capstone.carbonlive.entity.ElectricityFee;
+import com.capstone.carbonlive.entity.GasFee;
 import com.capstone.carbonlive.repository.BuildingRepository;
 import com.capstone.carbonlive.repository.ElectricityFeeRepository;
 import com.capstone.carbonlive.repository.ElectricityRepository;
@@ -163,16 +164,27 @@ class ElectricityServiceTest {
     @DisplayName("월별 단위 전기 사용요금 출력")
     public void findFee() throws Exception {
         //given
+        //2018-01 부터 2019-09 까지 실제값
         for (int i = 1; i < 13; i++) {
             electricityFeeRepository.save(ElectricityFee.builder()
                     .recordedAt(LocalDate.of(2018, i, 1))
                     .usages(i)
                     .fee(i)
                     .build());
+        }
+        for (int i = 1; i < 10; i++) {
             electricityFeeRepository.save(ElectricityFee.builder()
                     .recordedAt(LocalDate.of(2019, i, 1))
                     .usages(i)
                     .fee(i)
+                    .build());
+        }
+        //2019-10 부터 2019-12 까지 예측값
+        for (int i = 10; i < 13; i++) {
+            electricityFeeRepository.save(ElectricityFee.builder()
+                    .recordedAt(LocalDate.of(2019, i, 1))
+                    .prediction(i)
+                    .fee_prediction(i)
                     .build());
         }
 
@@ -184,9 +196,21 @@ class ElectricityServiceTest {
         assertThat(result.getResult().get(0).getYear()).isEqualTo(2018);
         assertThat(result.getResult().get(1).getYear()).isEqualTo(2019);
         for (int i = 0; i < 2; i++) {
-            for (int j = 0; j < 12; j++) {
-                assertThat(result.getResult().get(i).getFeeResponses()[j].getUsages()).isEqualTo(j + 1);
-                assertThat(result.getResult().get(i).getFeeResponses()[j].getFee()).isEqualTo(j + 1);
+            if (i == 0) {
+                for (int j = 0; j < 12; j++) {
+                    assertThat(result.getResult().get(i).getFeeResponses()[j].getUsages()).isEqualTo(j + 1);
+                    assertThat(result.getResult().get(i).getFeeResponses()[j].getFee()).isEqualTo(j + 1);
+                }
+            }
+            else {
+                for (int j = 0; j < 9; j++) {
+                    assertThat(result.getResult().get(i).getFeeResponses()[j].getUsages()).isEqualTo(j + 1);
+                    assertThat(result.getResult().get(i).getFeeResponses()[j].getFee()).isEqualTo(j + 1);
+                }
+                for (int j = 9; j < 12; j++) {
+                    assertThat(result.getResult().get(i).getFeeResponses()[j].getPrediction()).isEqualTo(j + 1);
+                    assertThat(result.getResult().get(i).getFeeResponses()[j].getFee_prediction()).isEqualTo(j + 1);
+                }
             }
         }
     }

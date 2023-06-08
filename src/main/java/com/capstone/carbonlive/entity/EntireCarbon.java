@@ -20,8 +20,9 @@ public class EntireCarbon extends BaseEntity {
     private Long id;
 
     @Builder(toBuilder = true)
-    public EntireCarbon(LocalDate recordedAt, Integer usages) {
+    public EntireCarbon(LocalDate recordedAt, Integer usages, Integer prediction) {
         this.recordedAt = recordedAt;
         this.usages = usages;
+        this.prediction = prediction;
     }
 }

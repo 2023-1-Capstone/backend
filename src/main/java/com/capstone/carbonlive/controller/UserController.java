@@ -39,16 +39,17 @@ public class UserController {
      * 회원가입 이메일 인증 성공
      */
     @GetMapping("/joinConfirm")
-    @ResponseStatus(HttpStatus.OK)
     public void joinConfirm(@RequestParam("email") String email,
                             @RequestParam("authToken") String authToken,
                             HttpServletResponse response) throws IOException {
-
         String uri = userService.joinConfirm(email, authToken);
-        if (uri != null)
+        if (uri != null) {
             response.sendRedirect(uri);
-        else
-            response.sendRedirect("http://localhost:3000");
+        }
+        else {
+            response.sendRedirect("https://carbonlive.kro.kr");
+        }
+        return;
     }
 
     /**

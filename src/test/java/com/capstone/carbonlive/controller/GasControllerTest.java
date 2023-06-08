@@ -227,8 +227,14 @@ class GasControllerTest extends AbstractRestDocsTest {
                         responseFields(fieldWithPath("result").description("결과 반환"),
                                 fieldWithPath("result[].year").description("해당 사용요금 데이터의 년도"),
                                 fieldWithPath("result[].feeResponses").description("사용요금 데이터"),
-                                fieldWithPath("result[].feeResponses[].usages").description("월별 전체 사용량(1월-12월)"),
-                                fieldWithPath("result[].feeResponses[].fee").description("월별 사용요금(1월-12월)")
+                                fieldWithPath("result[].feeResponses[].usages").type(JsonFieldType.NUMBER)
+                                        .description("실 사용량. null인 경우, 실측 사용량이 없음").optional(),
+                                fieldWithPath("result[].feeResponses[].prediction").type(JsonFieldType.NUMBER)
+                                        .description("예측 사용량. null인 경우, 실측값이 존재하거나 예측 사용량이 없음").optional(),
+                                fieldWithPath("result[].feeResponses[].fee").type(JsonFieldType.NUMBER)
+                                        .description("사용요금. null인 경우, 사용요금 정보가 없음").optional(),
+                                fieldWithPath("result[].feeResponses[].fee_prediction").type(JsonFieldType.NUMBER)
+                                        .description("예측 사용요금. null인 경우, 실 사용요금 정보가 있거나 예측 사용요금이 없음").optional()
                         )
                 ));
     }

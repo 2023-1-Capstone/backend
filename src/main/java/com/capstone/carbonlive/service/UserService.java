@@ -74,7 +74,7 @@ public class UserService {
         //이메일 인증토큰 생성 및 Redis 저장
         String authToken = UUID.randomUUID().toString();
         redisService.setDataWithExpiration(
-                EMAILAUTH.getKey() + userJoinRequest.getEmail(), authToken, 60*5L);
+                EMAILAUTH.getKey() + userJoinRequest.getEmail(), authToken, 5 * 60 * 1000L);
 
         userRepository.save(user);
 
@@ -85,6 +85,8 @@ public class UserService {
     private void validateDuplicatedUser(User user) {
         if (userRepository.findByUsername(user.getUsername()).isPresent())
             throw new UserException(ALREADY_EXIST_USER);
+        if (userRepository.findByEmail(user.getEmail()).isPresent())
+            throw new UserException(ALREADY_EXIST_EMAIL);
     }
 
     /**
@@ -95,10 +97,17 @@ public class UserService {
         User user = userRepository.findByEmail(email).orElseThrow(
                 () -> new UserException(NO_USER));
 
+        /**
+         * 두번째 호출인지 확인
+         */
+        if (user.isAuthStatus()) {
+            return null;
+        }
+
         String redisAuthToken = redisService.getData(EMAILAUTH.getKey() + email);
         if (redisAuthToken == null || !redisAuthToken.equals(authToken)) {
             userRepository.delete(user);
-            return "http://localhost:3000/authException";
+            return "https://carbonlive.kro.kr/authException";
         }
 
         //인증 상태 업데이트
